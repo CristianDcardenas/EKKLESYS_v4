@@ -83,6 +83,16 @@ namespace GUI.Properties {
         /// <summary>
         ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Captura_de_pantalla_2025_05_21_162820 {
+            get {
+                object obj = ResourceManager.GetObject("Captura de pantalla 2025-05-21 162820", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap ChatGPT_Image_19_may_2025__12_45_17 {
             get {
                 object obj = ResourceManager.GetObject("ChatGPT Image 19 may 2025, 12_45_17", resourceCulture);

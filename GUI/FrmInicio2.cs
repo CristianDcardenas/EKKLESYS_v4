@@ -732,7 +732,8 @@ namespace GUI
 
         private void btnConocerMas_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("EKKLESYS es un sistema de gestión integral para iglesias.", "Acerca de EKKLESYS");
+            FrmAcercaDe frmAcercaDe = new FrmAcercaDe();
+            frmAcercaDe.ShowDialog();
         }
 
         private void btnVerDetallesCurso_Click(object sender, EventArgs e)

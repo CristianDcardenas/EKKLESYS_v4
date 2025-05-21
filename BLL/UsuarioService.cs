@@ -145,11 +145,80 @@ namespace BLL
                     id_usuario = usuario.id_usuario,
                     NombreCompleto = usuario.NombreCompleto,
                     email = usuario.email,
-                    es_miembro = usuario.es_miembro == "S" ? "Sí" : "No"
+                    es_miembro = usuario.es_miembro == "S" ? "Sí" : "No",
+                    es_administrador = usuario.es_administrador == "S" ? "Sí" : "No"
                 });
             }
 
             return usuariosDTO;
+        }
+
+        public string CambiarRolAdministrador(int usuarioId, string nuevoEstado)
+        {
+            try
+            {
+                // Validar que el nuevo estado sea válido
+                if (nuevoEstado != "S" && nuevoEstado != "N")
+                {
+                    return "Error: Estado no válido. Debe ser 'S' o 'N'";
+                }
+
+                // Validar que no sea el último administrador
+                if (nuevoEstado == "N")
+                {
+                    // Verificar si es el último administrador
+                    var usuarios = usuarioRepository.ConsultarTodos();
+                    int contadorAdmins = 0;
+
+                    foreach (var usuario in usuarios)
+                    {
+                        if (usuario.es_administrador == "S")
+                        {
+                            contadorAdmins++;
+                        }
+                    }
+
+                    // Si solo hay un administrador y estamos intentando quitarle el rol
+                    if (contadorAdmins == 1)
+                    {
+                        var usuarioActual = usuarioRepository.BuscarPorId(usuarioId);
+                        if (usuarioActual != null && usuarioActual.es_administrador == "S")
+                        {
+                            return "Error: No se puede quitar el rol de administrador al último administrador del sistema";
+                        }
+                    }
+                }
+
+                // Actualizar el estado de administrador
+                usuarioRepository.ActualizarEstadoAdministrador(usuarioId, nuevoEstado);
+
+                return "Rol de administrador actualizado correctamente";
+            }
+            catch (Exception ex)
+            {
+                return $"Error al cambiar rol de administrador: {ex.Message}";
+            }
+        }
+
+        public string CambiarEstadoMiembro(int usuarioId, string nuevoEstado)
+        {
+            try
+            {
+                // Validar que el nuevo estado sea válido
+                if (nuevoEstado != "S" && nuevoEstado != "N")
+                {
+                    return "Error: Estado no válido. Debe ser 'S' o 'N'";
+                }
+
+                // Actualizar el estado de miembro
+                usuarioRepository.ActualizarEstadoMiembro(usuarioId, nuevoEstado);
+
+                return "Estado de miembro actualizado correctamente";
+            }
+            catch (Exception ex)
+            {
+                return $"Error al cambiar estado de miembro: {ex.Message}";
+            }
         }
     }
 }

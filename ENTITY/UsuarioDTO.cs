@@ -12,5 +12,6 @@ namespace ENTITY
         public string NombreCompleto { get; set; }
         public string email { get; set; }
         public string es_miembro { get; set; }
+        public string es_administrador { get; set; }
     }
 }

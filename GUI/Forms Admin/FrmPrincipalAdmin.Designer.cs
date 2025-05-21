@@ -49,9 +49,9 @@
             this.pnMenuLateral.Controls.Add(this.panelLogo);
             this.pnMenuLateral.Dock = System.Windows.Forms.DockStyle.Left;
             this.pnMenuLateral.Location = new System.Drawing.Point(0, 0);
-            this.pnMenuLateral.Margin = new System.Windows.Forms.Padding(2);
+            this.pnMenuLateral.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.pnMenuLateral.Name = "pnMenuLateral";
-            this.pnMenuLateral.Size = new System.Drawing.Size(194, 569);
+            this.pnMenuLateral.Size = new System.Drawing.Size(259, 700);
             this.pnMenuLateral.TabIndex = 0;
             // 
             // btnCerrarSesion
@@ -66,11 +66,11 @@
             this.btnCerrarSesion.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this.btnCerrarSesion.IconSize = 32;
             this.btnCerrarSesion.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnCerrarSesion.Location = new System.Drawing.Point(0, 519);
-            this.btnCerrarSesion.Margin = new System.Windows.Forms.Padding(2);
+            this.btnCerrarSesion.Location = new System.Drawing.Point(0, 638);
+            this.btnCerrarSesion.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnCerrarSesion.Name = "btnCerrarSesion";
-            this.btnCerrarSesion.Padding = new System.Windows.Forms.Padding(8, 0, 15, 0);
-            this.btnCerrarSesion.Size = new System.Drawing.Size(194, 50);
+            this.btnCerrarSesion.Padding = new System.Windows.Forms.Padding(11, 0, 20, 0);
+            this.btnCerrarSesion.Size = new System.Drawing.Size(259, 62);
             this.btnCerrarSesion.TabIndex = 5;
             this.btnCerrarSesion.Text = "Cerrar Sesión";
             this.btnCerrarSesion.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -90,11 +90,11 @@
             this.btnVerPerfil.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this.btnVerPerfil.IconSize = 32;
             this.btnVerPerfil.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnVerPerfil.Location = new System.Drawing.Point(0, 301);
-            this.btnVerPerfil.Margin = new System.Windows.Forms.Padding(2);
+            this.btnVerPerfil.Location = new System.Drawing.Point(0, 372);
+            this.btnVerPerfil.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnVerPerfil.Name = "btnVerPerfil";
-            this.btnVerPerfil.Padding = new System.Windows.Forms.Padding(8, 0, 15, 0);
-            this.btnVerPerfil.Size = new System.Drawing.Size(194, 50);
+            this.btnVerPerfil.Padding = new System.Windows.Forms.Padding(11, 0, 20, 0);
+            this.btnVerPerfil.Size = new System.Drawing.Size(259, 62);
             this.btnVerPerfil.TabIndex = 6;
             this.btnVerPerfil.Text = "Mi Perfil";
             this.btnVerPerfil.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -114,11 +114,11 @@
             this.btnVerUsuarios.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this.btnVerUsuarios.IconSize = 32;
             this.btnVerUsuarios.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnVerUsuarios.Location = new System.Drawing.Point(0, 251);
-            this.btnVerUsuarios.Margin = new System.Windows.Forms.Padding(2);
+            this.btnVerUsuarios.Location = new System.Drawing.Point(0, 310);
+            this.btnVerUsuarios.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnVerUsuarios.Name = "btnVerUsuarios";
-            this.btnVerUsuarios.Padding = new System.Windows.Forms.Padding(8, 0, 15, 0);
-            this.btnVerUsuarios.Size = new System.Drawing.Size(194, 50);
+            this.btnVerUsuarios.Padding = new System.Windows.Forms.Padding(11, 0, 20, 0);
+            this.btnVerUsuarios.Size = new System.Drawing.Size(259, 62);
             this.btnVerUsuarios.TabIndex = 7;
             this.btnVerUsuarios.Text = "Usuarios";
             this.btnVerUsuarios.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -138,11 +138,11 @@
             this.btnEventos.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this.btnEventos.IconSize = 32;
             this.btnEventos.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnEventos.Location = new System.Drawing.Point(0, 201);
-            this.btnEventos.Margin = new System.Windows.Forms.Padding(2);
+            this.btnEventos.Location = new System.Drawing.Point(0, 248);
+            this.btnEventos.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnEventos.Name = "btnEventos";
-            this.btnEventos.Padding = new System.Windows.Forms.Padding(8, 0, 15, 0);
-            this.btnEventos.Size = new System.Drawing.Size(194, 50);
+            this.btnEventos.Padding = new System.Windows.Forms.Padding(11, 0, 20, 0);
+            this.btnEventos.Size = new System.Drawing.Size(259, 62);
             this.btnEventos.TabIndex = 3;
             this.btnEventos.Text = "Eventos";
             this.btnEventos.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -162,11 +162,11 @@
             this.btnCursos.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this.btnCursos.IconSize = 32;
             this.btnCursos.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnCursos.Location = new System.Drawing.Point(0, 151);
-            this.btnCursos.Margin = new System.Windows.Forms.Padding(2);
+            this.btnCursos.Location = new System.Drawing.Point(0, 186);
+            this.btnCursos.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnCursos.Name = "btnCursos";
-            this.btnCursos.Padding = new System.Windows.Forms.Padding(8, 0, 15, 0);
-            this.btnCursos.Size = new System.Drawing.Size(194, 50);
+            this.btnCursos.Padding = new System.Windows.Forms.Padding(11, 0, 20, 0);
+            this.btnCursos.Size = new System.Drawing.Size(259, 62);
             this.btnCursos.TabIndex = 2;
             this.btnCursos.Text = "Cursos";
             this.btnCursos.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -180,9 +180,9 @@
             this.panelLogo.Controls.Add(this.picLogo);
             this.panelLogo.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelLogo.Location = new System.Drawing.Point(0, 0);
-            this.panelLogo.Margin = new System.Windows.Forms.Padding(2);
+            this.panelLogo.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.panelLogo.Name = "panelLogo";
-            this.panelLogo.Size = new System.Drawing.Size(194, 151);
+            this.panelLogo.Size = new System.Drawing.Size(259, 186);
             this.panelLogo.TabIndex = 0;
             // 
             // lblBienvenido
@@ -190,19 +190,18 @@
             this.lblBienvenido.AutoSize = true;
             this.lblBienvenido.Font = new System.Drawing.Font("Century Gothic", 10F, System.Drawing.FontStyle.Bold);
             this.lblBienvenido.ForeColor = System.Drawing.Color.White;
-            this.lblBienvenido.Location = new System.Drawing.Point(9, 125);
-            this.lblBienvenido.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblBienvenido.Location = new System.Drawing.Point(12, 154);
             this.lblBienvenido.Name = "lblBienvenido";
-            this.lblBienvenido.Size = new System.Drawing.Size(84, 17);
+            this.lblBienvenido.Size = new System.Drawing.Size(103, 19);
             this.lblBienvenido.TabIndex = 1;
             this.lblBienvenido.Text = "Bienvenid@";
             // 
             // picLogo
             // 
-            this.picLogo.Location = new System.Drawing.Point(22, 16);
-            this.picLogo.Margin = new System.Windows.Forms.Padding(2);
+            this.picLogo.Location = new System.Drawing.Point(29, 20);
+            this.picLogo.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.picLogo.Name = "picLogo";
-            this.picLogo.Size = new System.Drawing.Size(142, 98);
+            this.picLogo.Size = new System.Drawing.Size(189, 121);
             this.picLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.picLogo.TabIndex = 0;
             this.picLogo.TabStop = false;
@@ -213,10 +212,10 @@
             this.pnTitleBar.Controls.Add(this.lblTitulo);
             this.pnTitleBar.Controls.Add(this.iconFormActual);
             this.pnTitleBar.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnTitleBar.Location = new System.Drawing.Point(194, 0);
-            this.pnTitleBar.Margin = new System.Windows.Forms.Padding(2);
+            this.pnTitleBar.Location = new System.Drawing.Point(259, 0);
+            this.pnTitleBar.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.pnTitleBar.Name = "pnTitleBar";
-            this.pnTitleBar.Size = new System.Drawing.Size(631, 65);
+            this.pnTitleBar.Size = new System.Drawing.Size(841, 80);
             this.pnTitleBar.TabIndex = 1;
             this.pnTitleBar.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pnTitleBar_MouseDown);
             // 
@@ -225,10 +224,9 @@
             this.lblTitulo.AutoSize = true;
             this.lblTitulo.Font = new System.Drawing.Font("Century Gothic", 12F, System.Drawing.FontStyle.Bold);
             this.lblTitulo.ForeColor = System.Drawing.Color.White;
-            this.lblTitulo.Location = new System.Drawing.Point(50, 32);
-            this.lblTitulo.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblTitulo.Location = new System.Drawing.Point(67, 39);
             this.lblTitulo.Name = "lblTitulo";
-            this.lblTitulo.Size = new System.Drawing.Size(167, 19);
+            this.lblTitulo.Size = new System.Drawing.Size(208, 23);
             this.lblTitulo.TabIndex = 1;
             this.lblTitulo.Text = "Panel Administrativo";
             // 
@@ -239,11 +237,11 @@
             this.iconFormActual.IconChar = FontAwesome.Sharp.IconChar.UserShield;
             this.iconFormActual.IconColor = System.Drawing.Color.Cyan;
             this.iconFormActual.IconFont = FontAwesome.Sharp.IconFont.Auto;
-            this.iconFormActual.IconSize = 30;
-            this.iconFormActual.Location = new System.Drawing.Point(15, 19);
-            this.iconFormActual.Margin = new System.Windows.Forms.Padding(2);
+            this.iconFormActual.IconSize = 39;
+            this.iconFormActual.Location = new System.Drawing.Point(20, 23);
+            this.iconFormActual.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.iconFormActual.Name = "iconFormActual";
-            this.iconFormActual.Size = new System.Drawing.Size(30, 32);
+            this.iconFormActual.Size = new System.Drawing.Size(40, 39);
             this.iconFormActual.TabIndex = 0;
             this.iconFormActual.TabStop = false;
             // 
@@ -251,32 +249,32 @@
             // 
             this.pnSeparador.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(64)))));
             this.pnSeparador.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnSeparador.Location = new System.Drawing.Point(194, 65);
-            this.pnSeparador.Margin = new System.Windows.Forms.Padding(2);
+            this.pnSeparador.Location = new System.Drawing.Point(259, 80);
+            this.pnSeparador.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.pnSeparador.Name = "pnSeparador";
-            this.pnSeparador.Size = new System.Drawing.Size(631, 4);
+            this.pnSeparador.Size = new System.Drawing.Size(841, 5);
             this.pnSeparador.TabIndex = 2;
             // 
             // pnContenedor
             // 
             this.pnContenedor.BackColor = System.Drawing.Color.White;
             this.pnContenedor.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnContenedor.Location = new System.Drawing.Point(194, 69);
-            this.pnContenedor.Margin = new System.Windows.Forms.Padding(2);
+            this.pnContenedor.Location = new System.Drawing.Point(259, 85);
+            this.pnContenedor.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.pnContenedor.Name = "pnContenedor";
-            this.pnContenedor.Size = new System.Drawing.Size(631, 500);
+            this.pnContenedor.Size = new System.Drawing.Size(841, 615);
             this.pnContenedor.TabIndex = 3;
             // 
             // FrmPrincipalAdmin
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(825, 569);
+            this.ClientSize = new System.Drawing.Size(1100, 700);
             this.Controls.Add(this.pnContenedor);
             this.Controls.Add(this.pnSeparador);
             this.Controls.Add(this.pnTitleBar);
             this.Controls.Add(this.pnMenuLateral);
-            this.Margin = new System.Windows.Forms.Padding(2);
+            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "FrmPrincipalAdmin";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Panel Administrativo - Sistema de Gestión de Iglesia";

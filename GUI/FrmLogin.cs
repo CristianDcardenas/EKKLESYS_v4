@@ -119,5 +119,35 @@ namespace GUI
             //frmInicio.Show();
             //this.Hide();
         }
+
+        private void txtEmail_Enter(object sender, EventArgs e)
+        {
+            // Cuando el usuario hace clic en el campo de correo
+            if (txtEmail.Text == "correo@ejemplo.com")
+            {
+                txtEmail.Text = "";
+                txtEmail.ForeColor = Color.FromArgb(64, 64, 64);
+            }
+            panelLineaEmail.BackColor = Color.FromArgb(40, 103, 178);
+            panelLineaEmail.Height = 2;
+        }
+
+        private void txtEmail_Leave(object sender, EventArgs e)
+        {
+            // Cuando el usuario sale del campo de correo
+            if (string.IsNullOrWhiteSpace(txtEmail.Text))
+            {
+                txtEmail.Text = "correo@ejemplo.com";
+                txtEmail.ForeColor = Color.DimGray;
+            }
+            panelLineaEmail.BackColor = Color.FromArgb(224, 224, 224);
+            panelLineaEmail.Height = 1;
+        }
+
+        private void checkBoxMostrarPassword_CheckedChanged(object sender, EventArgs e)
+        {
+            // Mostrar u ocultar la contraseña
+            txtPassword.PasswordChar = checkBoxMostrarPassword.Checked ? '\0' : '•';
+        }
     }
 }

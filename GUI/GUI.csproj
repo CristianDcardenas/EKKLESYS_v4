@@ -83,6 +83,12 @@
     <Compile Include="Forms User\FrmEventosUser.Designer.cs">
       <DependentUpon>FrmEventosUser.cs</DependentUpon>
     </Compile>
+    <Compile Include="FrmAcercaDe.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmAcercaDe.Designer.cs">
+      <DependentUpon>FrmAcercaDe.cs</DependentUpon>
+    </Compile>
     <Compile Include="FrmCambiarPassword.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -203,6 +209,9 @@
     <EmbeddedResource Include="Forms User\FrmEventosUser.resx">
       <DependentUpon>FrmEventosUser.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="FrmAcercaDe.resx">
+      <DependentUpon>FrmAcercaDe.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FrmCambiarPassword.resx">
       <DependentUpon>FrmCambiarPassword.cs</DependentUpon>
     </EmbeddedResource>
@@ -262,6 +271,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Captura de pantalla 2025-05-21 162820.png" />
     <None Include="Resources\lakewood.jpg" />
     <None Include="Resources\ChatGPT Image 19 may 2025, 12_45_17.png" />
     <None Include="Resources\1344311.png" />

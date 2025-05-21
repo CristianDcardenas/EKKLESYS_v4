@@ -367,5 +367,119 @@ namespace DAL
                 throw new Exception($"Error al mapear usuario: {ex.Message}", ex);
             }
         }
+
+        public void ActualizarEstadoMiembro(int idUsuario, string esMiembro)
+        {
+            using (var connection = connectionManager.GetConnection())
+            {
+                try
+                {
+                    connection.Open();
+                    using (var command = new OracleCommand())
+                    {
+                        command.Connection = connection;
+                        command.CommandType = System.Data.CommandType.StoredProcedure;
+                        command.CommandText = "sp_actualizar_estado_miembro";
+
+                        // Parámetros de entrada
+                        command.Parameters.Add(new OracleParameter("p_id_usuario", OracleDbType.Int32) { Value = idUsuario });
+                        command.Parameters.Add(new OracleParameter("p_es_miembro", OracleDbType.Char) { Value = esMiembro });
+
+                        // Parámetros de salida
+                        OracleParameter p_resultado = new OracleParameter("p_resultado", OracleDbType.Int32);
+                        p_resultado.Direction = System.Data.ParameterDirection.Output;
+                        command.Parameters.Add(p_resultado);
+
+                        OracleParameter p_mensaje = new OracleParameter("p_mensaje", OracleDbType.Varchar2, 500);
+                        p_mensaje.Direction = System.Data.ParameterDirection.Output;
+                        command.Parameters.Add(p_mensaje);
+
+                        command.ExecuteNonQuery();
+
+                        // Verificar el resultado
+                        int resultado = 0;
+                        if (p_resultado.Value != DBNull.Value)
+                        {
+                            if (p_resultado.Value is OracleDecimal oracleDecimal)
+                            {
+                                resultado = oracleDecimal.ToInt32();
+                            }
+                            else
+                            {
+                                resultado = Convert.ToInt32(p_resultado.Value);
+                            }
+                        }
+
+                        if (resultado <= 0)
+                        {
+                            string mensaje = p_mensaje.Value != DBNull.Value ? p_mensaje.Value.ToString() : "Error desconocido";
+                            throw new Exception(mensaje);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error al actualizar estado de miembro: {ex.Message}");
+                    throw;
+                }
+            }
+        }
+
+        public void ActualizarEstadoAdministrador(int idUsuario, string esAdministrador)
+        {
+            using (var connection = connectionManager.GetConnection())
+            {
+                try
+                {
+                    connection.Open();
+                    using (var command = new OracleCommand())
+                    {
+                        command.Connection = connection;
+                        command.CommandType = System.Data.CommandType.StoredProcedure;
+                        command.CommandText = "sp_actualizar_estado_admin";
+
+                        // Parámetros de entrada
+                        command.Parameters.Add(new OracleParameter("p_id_usuario", OracleDbType.Int32) { Value = idUsuario });
+                        command.Parameters.Add(new OracleParameter("p_es_administrador", OracleDbType.Char) { Value = esAdministrador });
+
+                        // Parámetros de salida
+                        OracleParameter p_resultado = new OracleParameter("p_resultado", OracleDbType.Int32);
+                        p_resultado.Direction = System.Data.ParameterDirection.Output;
+                        command.Parameters.Add(p_resultado);
+
+                        OracleParameter p_mensaje = new OracleParameter("p_mensaje", OracleDbType.Varchar2, 500);
+                        p_mensaje.Direction = System.Data.ParameterDirection.Output;
+                        command.Parameters.Add(p_mensaje);
+
+                        command.ExecuteNonQuery();
+
+                        // Verificar el resultado
+                        int resultado = 0;
+                        if (p_resultado.Value != DBNull.Value)
+                        {
+                            if (p_resultado.Value is OracleDecimal oracleDecimal)
+                            {
+                                resultado = oracleDecimal.ToInt32();
+                            }
+                            else
+                            {
+                                resultado = Convert.ToInt32(p_resultado.Value);
+                            }
+                        }
+
+                        if (resultado <= 0)
+                        {
+                            string mensaje = p_mensaje.Value != DBNull.Value ? p_mensaje.Value.ToString() : "Error desconocido";
+                            throw new Exception(mensaje);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error al actualizar estado de administrador: {ex.Message}");
+                    throw;
+                }
+            }
+        }
     }
 }

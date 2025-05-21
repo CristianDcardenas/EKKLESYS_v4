@@ -9,13 +9,11 @@ namespace GUI
     public partial class FrmUsuarios : Form
     {
         private readonly UsuarioService _usuarioService;
-        //private readonly RGBColors _rgbColors;
 
         public FrmUsuarios()
         {
             InitializeComponent();
             _usuarioService = new UsuarioService();
-            //_rgbColors = new RGBColors();
             ConfigurarDataGridView();
             CargarUsuarios();
         }
@@ -49,7 +47,8 @@ namespace GUI
                         usuario.id_usuario,
                         usuario.NombreCompleto,
                         usuario.email,
-                        usuario.es_miembro == "S" ? "Sí" : "No"
+                        usuario.es_miembro,
+                        usuario.es_administrador
                     );
                 }
 
@@ -63,95 +62,128 @@ namespace GUI
             }
         }
 
-        //private void btnRefrescar_Click(object sender, EventArgs e)
-        //{
-        //    CargarUsuarios();
-        //}
-
-        //private void btnNuevoUsuario_Click(object sender, EventArgs e)
-        //{
-        //    FrmCrearUsuario frmCrearUsuario = new FrmCrearUsuario();
-        //    if (frmCrearUsuario.ShowDialog() == DialogResult.OK)
-        //    {
-        //        CargarUsuarios();
-        //    }
-        //}
-
-        //private void btnEditarUsuario_Click(object sender, EventArgs e)
-        //{
-        //    if (dgvUsuarios.SelectedRows.Count == 0)
-        //    {
-        //        MessageBox.Show("Por favor seleccione un usuario para editar", "Advertencia",
-        //            MessageBoxButtons.OK, MessageBoxIcon.Warning);
-        //        return;
-        //    }
-
-        //    int usuarioId = Convert.ToInt32(dgvUsuarios.SelectedRows[0].Cells["colId"].Value);
-        //    FrmEditarUsuario frmEditarUsuario = new FrmEditarUsuario(usuarioId);
-        //    if (frmEditarUsuario.ShowDialog() == DialogResult.OK)
-        //    {
-        //        CargarUsuarios();
-        //    }
-        //}
-
-        //private void btnEliminarUsuario_Click(object sender, EventArgs e)
-        //{
-        //    if (dgvUsuarios.SelectedRows.Count == 0)
-        //    {
-        //        MessageBox.Show("Por favor seleccione un usuario para eliminar", "Advertencia",
-        //            MessageBoxButtons.OK, MessageBoxIcon.Warning);
-        //        return;
-        //    }
-
-        //    if (Session.CurrentUser?.es_administrador != "S")
-        //    {
-        //        MessageBox.Show("Solo los administradores pueden eliminar usuarios", "Acceso denegado",
-        //            MessageBoxButtons.OK, MessageBoxIcon.Warning);
-        //        return;
-        //    }
-
-        //    int usuarioId = Convert.ToInt32(dgvUsuarios.SelectedRows[0].Cells["colId"].Value);
-        //    string nombreUsuario = dgvUsuarios.SelectedRows[0].Cells["colNombre"].Value.ToString();
-
-        //    var confirmacion = MessageBox.Show(
-        //        $"¿Está seguro que desea eliminar al usuario: {nombreUsuario}?\n\nEsta acción no se puede deshacer.",
-        //        "Confirmar eliminación",
-        //        MessageBoxButtons.YesNo,
-        //        MessageBoxIcon.Warning,
-        //        MessageBoxDefaultButton.Button2);
-
-        //    if (confirmacion == DialogResult.Yes)
-        //    {
-        //        try
-        //        {
-        //            var resultado = _usuarioService.Eliminar(usuarioId);
-
-        //            if (resultado.StartsWith("Error"))
-        //            {
-        //                MessageBox.Show(resultado, "Error al eliminar",
-        //                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //            }
-        //            else
-        //            {
-        //                MessageBox.Show("Usuario eliminado exitosamente", "Éxito",
-        //                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-        //                CargarUsuarios();
-        //            }
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            MessageBox.Show($"Error al procesar la eliminación: {ex.Message}",
-        //                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //        }
-        //    }
-        //}
-
         private void FrmUsuarios_Load(object sender, EventArgs e)
         {
             // Configurar visibilidad de botones según rol
-            //btnEliminarUsuario.Visible = Session.CurrentUser?.es_administrador == "S";
-            //btnEditarUsuario.Visible = Session.CurrentUser?.es_administrador == "S";
-            //btnNuevoUsuario.Visible = Session.CurrentUser?.es_administrador == "S";
+            bool esAdmin = Session.CurrentUser?.es_administrador == "S";
+            btnCambiarAdmin.Visible = esAdmin;
+            btnCambiarMiembro.Visible = esAdmin;
+        }
+
+        private void btnCambiarAdmin_Click(object sender, EventArgs e)
+        {
+            if (dgvUsuarios.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Por favor seleccione un usuario para cambiar su rol", "Advertencia",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (Session.CurrentUser?.es_administrador != "S")
+            {
+                MessageBox.Show("Solo los administradores pueden cambiar roles", "Acceso denegado",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            int usuarioId = Convert.ToInt32(dgvUsuarios.SelectedRows[0].Cells["colId"].Value);
+            string nombreUsuario = dgvUsuarios.SelectedRows[0].Cells["colNombre"].Value.ToString();
+            bool esAdmin = dgvUsuarios.SelectedRows[0].Cells["colEsAdmin"].Value.ToString() == "Sí";
+
+            string accion = esAdmin ? "quitar" : "otorgar";
+            string mensaje = $"¿Está seguro que desea {accion} el rol de administrador a {nombreUsuario}?";
+
+            var confirmacion = MessageBox.Show(
+                mensaje,
+                "Confirmar cambio de rol",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question,
+                MessageBoxDefaultButton.Button2);
+
+            if (confirmacion == DialogResult.Yes)
+            {
+                try
+                {
+                    // Cambiar el estado de administrador
+                    string nuevoEstado = esAdmin ? "N" : "S";
+                    var resultado = _usuarioService.CambiarRolAdministrador(usuarioId, nuevoEstado);
+
+                    if (resultado.StartsWith("Error"))
+                    {
+                        MessageBox.Show(resultado, "Error al cambiar rol",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Rol de usuario actualizado exitosamente", "Éxito",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        CargarUsuarios();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error al procesar el cambio de rol: {ex.Message}",
+                        "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private void btnCambiarMiembro_Click(object sender, EventArgs e)
+        {
+            if (dgvUsuarios.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Por favor seleccione un usuario para cambiar su estado de membresía", "Advertencia",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (Session.CurrentUser?.es_administrador != "S")
+            {
+                MessageBox.Show("Solo los administradores pueden cambiar el estado de membresía", "Acceso denegado",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            int usuarioId = Convert.ToInt32(dgvUsuarios.SelectedRows[0].Cells["colId"].Value);
+            string nombreUsuario = dgvUsuarios.SelectedRows[0].Cells["colNombre"].Value.ToString();
+            bool esMiembro = dgvUsuarios.SelectedRows[0].Cells["colEsMiembro"].Value.ToString() == "Sí";
+
+            string accion = esMiembro ? "quitar" : "otorgar";
+            string mensaje = $"¿Está seguro que desea {accion} el estado de miembro a {nombreUsuario}?";
+
+            var confirmacion = MessageBox.Show(
+                mensaje,
+                "Confirmar cambio de membresía",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question,
+                MessageBoxDefaultButton.Button2);
+
+            if (confirmacion == DialogResult.Yes)
+            {
+                try
+                {
+                    // Cambiar el estado de miembro
+                    string nuevoEstado = esMiembro ? "N" : "S";
+                    var resultado = _usuarioService.CambiarEstadoMiembro(usuarioId, nuevoEstado);
+
+                    if (resultado.StartsWith("Error"))
+                    {
+                        MessageBox.Show(resultado, "Error al cambiar estado de membresía",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Estado de membresía actualizado exitosamente", "Éxito",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        CargarUsuarios();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error al procesar el cambio de membresía: {ex.Message}",
+                        "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
         }
     }
 }

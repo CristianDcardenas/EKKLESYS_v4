@@ -20,34 +20,7 @@ namespace DAL
 
         public void Guardar(Usuario usuario)
         {
-            //using (var connection = connectionManager.GetConnection())
-            //{
-            //    connection.Open();
-            //    using (var command = new OracleCommand())
-            //    {
-            //        command.Connection = connection;
-            //        command.CommandText = @"INSERT INTO Usuarios (nombre, apellido_paterno, fecha_nacimiento, direccion, 
-            //                              telefono, telefono2, email, cedula, password, es_miembro, ruta_imagen_usuario, id_comuna, es_administrador) 
-            //                              VALUES (:nombre, :apellido_paterno, :fecha_nacimiento, :direccion, 
-            //                              :telefono, :telefono2, :email, :cedula, :clave, :es_miembro, :ruta_imagen_usuario, :id_comuna, :es_administrador)";
-
-            //        command.Parameters.Add("nombre", usuario.nombre);
-            //        command.Parameters.Add("apellido_paterno", usuario.apellido_paterno);
-            //        command.Parameters.Add("fecha_nacimiento", usuario.fecha_nacimiento);
-            //        command.Parameters.Add("direccion", usuario.direccion);
-            //        command.Parameters.Add("telefono", usuario.telefono);
-            //        command.Parameters.Add("telefono2", usuario.telefono2 ?? (object)DBNull.Value);
-            //        command.Parameters.Add("email", usuario.email);
-            //        command.Parameters.Add("cedula", usuario.cedula);
-            //        command.Parameters.Add("clave", usuario.clave);
-            //        command.Parameters.Add("es_miembro", usuario.es_miembro);
-            //        command.Parameters.Add("ruta_imagen_usuario", usuario.ruta_imagen_usuario ?? (object)DBNull.Value);
-            //        command.Parameters.Add("id_comuna", usuario.id_comuna);
-            //        command.Parameters.Add("es_administrador", usuario.es_administrador);
-
-            //        command.ExecuteNonQuery();
-            //    }
-            //}
+            
 
             using (var connection = connectionManager.GetConnection())
             {
@@ -119,38 +92,6 @@ namespace DAL
 
         }
 
-        //public void Modificar(Usuario usuario)
-        //{
-        //    using (var connection = connectionManager.GetConnection())
-        //    {
-        //        connection.Open();
-        //        using (var command = new OracleCommand())
-        //        {
-        //            command.Connection = connection;
-        //            command.CommandText = @"UPDATE Usuarios SET nombre = :nombre, apellido_paterno = :apellido_paterno, 
-        //                                  fecha_nacimiento = :fecha_nacimiento, direccion = :direccion, telefono = :telefono, 
-        //                                  telefono2 = :telefono2, email = :email, cedula = :cedula, es_miembro = :es_miembro, 
-        //                                  ruta_imagen_usuario = :ruta_imagen_usuario, id_comuna = :id_comuna, es_administrador = :es_administrador 
-        //                                  WHERE id_usuario = :id_usuario";
-
-        //            command.Parameters.Add("id_usuario", usuario.id_usuario);
-        //            command.Parameters.Add("nombre", usuario.nombre);
-        //            command.Parameters.Add("apellido_paterno", usuario.apellido_paterno);
-        //            command.Parameters.Add("fecha_nacimiento", usuario.fecha_nacimiento);
-        //            command.Parameters.Add("direccion", usuario.direccion);
-        //            command.Parameters.Add("telefono", usuario.telefono);
-        //            command.Parameters.Add("telefono_2", usuario.telefono_2 ?? (object)DBNull.Value);
-        //            command.Parameters.Add("email", usuario.email);
-        //            command.Parameters.Add("cedula", usuario.cedula);
-        //            command.Parameters.Add("es_miembro", usuario.es_miembro);
-        //            command.Parameters.Add("ruta_imagen_usuario", usuario.ruta_imagen_usuario ?? (object)DBNull.Value);
-        //            command.Parameters.Add("id_comuna", usuario.id_comuna);
-        //            command.Parameters.Add("es_administrador", usuario.es_administrador);
-
-        //            command.ExecuteNonQuery();
-        //        }
-        //    }
-        //}
 
         public void Modificar(Usuario usuario)
         {
@@ -186,10 +127,32 @@ namespace DAL
 
                         command.ExecuteNonQuery();
 
-                        int resultado = Convert.ToInt32(p_resultado.Value);
+                        // Verificar el resultado con manejo adecuado de OracleDecimal
+                        int resultado = 0;
+                        if (p_resultado.Value != DBNull.Value)
+                        {
+                            if (p_resultado.Value is OracleDecimal oracleDecimal)
+                            {
+                                resultado = oracleDecimal.ToInt32();
+                            }
+                            else
+                            {
+                                try
+                                {
+                                    resultado = Convert.ToInt32(p_resultado.Value);
+                                }
+                                catch (InvalidCastException)
+                                {
+                                    // Si hay un error de conversión, intentamos con ToString y luego a int
+                                    resultado = int.Parse(p_resultado.Value.ToString());
+                                }
+                            }
+                        }
+
                         if (resultado <= 0)
                         {
-                            throw new Exception($"Error al actualizar perfil: {p_mensaje.Value}");
+                            string mensaje = p_mensaje.Value != DBNull.Value ? p_mensaje.Value.ToString() : "Error desconocido";
+                            throw new Exception($"Error al actualizar perfil: {mensaje}");
                         }
                     }
                 }
@@ -201,20 +164,67 @@ namespace DAL
             }
         }
 
-        public void CambiarPassword(int idUsuario, string nuevoPassword)
+        public void CambiarPassword(int idUsuario, string passwordActual, string nuevoPassword)
         {
             using (var connection = connectionManager.GetConnection())
             {
-                connection.Open();
-                using (var command = new OracleCommand())
+                try
                 {
-                    command.Connection = connection;
-                    command.CommandText = "UPDATE Usuarios SET clave = :clave WHERE id_usuario = :id_usuario";
+                    connection.Open();
+                    using (var command = new OracleCommand())
+                    {
+                        command.Connection = connection;
+                        command.CommandType = System.Data.CommandType.StoredProcedure;
+                        command.CommandText = "pkg_usuarios.sp_cambiar_clave";
 
-                    command.Parameters.Add("id_usuario", idUsuario);
-                    command.Parameters.Add("clave", nuevoPassword);
+                        // Parámetros de entrada
+                        command.Parameters.Add("p_id_usuario", OracleDbType.Int32).Value = idUsuario;
+                        command.Parameters.Add("p_password_actual", OracleDbType.Varchar2).Value = passwordActual;
+                        command.Parameters.Add("p_nuevo_password", OracleDbType.Varchar2).Value = nuevoPassword;
 
-                    command.ExecuteNonQuery();
+                        // Parámetros de salida
+                        OracleParameter p_resultado = new OracleParameter("p_resultado", OracleDbType.Int32);
+                        p_resultado.Direction = System.Data.ParameterDirection.Output;
+                        command.Parameters.Add(p_resultado);
+
+                        OracleParameter p_mensaje = new OracleParameter("p_mensaje", OracleDbType.Varchar2, 500);
+                        p_mensaje.Direction = System.Data.ParameterDirection.Output;
+                        command.Parameters.Add(p_mensaje);
+
+                        command.ExecuteNonQuery();
+
+                        // Verificar el resultado con manejo adecuado de OracleDecimal
+                        int resultado = 0;
+                        if (p_resultado.Value != DBNull.Value)
+                        {
+                            if (p_resultado.Value is OracleDecimal oracleDecimal)
+                            {
+                                resultado = oracleDecimal.ToInt32();
+                            }
+                            else
+                            {
+                                try
+                                {
+                                    resultado = Convert.ToInt32(p_resultado.Value);
+                                }
+                                catch (InvalidCastException)
+                                {
+                                    resultado = int.Parse(p_resultado.Value.ToString());
+                                }
+                            }
+                        }
+
+                        if (resultado <= 0)
+                        {
+                            string mensaje = p_mensaje.Value != DBNull.Value ? p_mensaje.Value.ToString() : "Error desconocido";
+                            throw new Exception(mensaje);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error al cambiar contraseña: {ex.Message}");
+                    throw;
                 }
             }
         }

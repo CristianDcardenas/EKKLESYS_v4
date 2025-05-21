@@ -33,13 +33,20 @@ namespace GUI
                         txtPasswordActual.Text,
                         txtNuevoPassword.Text);
 
-                    MessageBox.Show(resultado, "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
                     if (!resultado.StartsWith("Error"))
                     {
-                        // Actualizar usuario en sesión
+                        // Actualizar explícitamente la contraseña en la sesión
+                        Session.CurrentUser.clave = txtNuevoPassword.Text;
+
+                        // Opcional: Recargar el usuario completo desde la base de datos
                         Session.CurrentUser = usuarioService.BuscarPorId(Session.CurrentUser.id_usuario);
+
+                        MessageBox.Show(resultado, "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         this.Close();
+                    }
+                    else
+                    {
+                        MessageBox.Show(resultado, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
                 catch (Exception ex)

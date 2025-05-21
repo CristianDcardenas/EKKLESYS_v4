@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DAL;
 using ENTITY;
+using static System.Collections.Specialized.BitVector32;
 
 namespace BLL
 {
@@ -71,21 +72,23 @@ namespace BLL
         {
             try
             {
-                // Validar que el usuario exista
+                // Verificar que la contraseña actual sea correcta
                 var usuario = usuarioRepository.BuscarPorId(idUsuario);
                 if (usuario == null)
                 {
-                    return $"Error al cambiar contraseña: El usuario con ID {idUsuario} no existe";
+                    return "Error: Usuario no encontrado";
                 }
 
-                // Validar que la contraseña actual sea correcta
                 if (usuario.clave != passwordActual)
                 {
-                    return "Error al cambiar contraseña: La contraseña actual es incorrecta";
+                    return "Error: La contraseña actual es incorrecta";
                 }
 
-                usuarioRepository.CambiarPassword(idUsuario, nuevoPassword);
-                return "Contraseña cambiada exitosamente";
+                // Cambiar la contraseña
+                usuarioRepository.CambiarPassword(idUsuario, passwordActual, nuevoPassword);
+
+                // Devolver el usuario actualizado para que el llamador pueda actualizar la sesión si es necesario
+                return "Contraseña actualizada correctamente";
             }
             catch (Exception ex)
             {

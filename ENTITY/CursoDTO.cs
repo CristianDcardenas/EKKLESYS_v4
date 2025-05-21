@@ -15,5 +15,6 @@ namespace ENTITY
         public DateTime fecha_fin_curso { get; set; }
         public int capacidad_max_curso { get; set; }
         public int NumeroInscritos { get; set; }
+        public string ruta_imagen_curso { get; set; }
     }
 }

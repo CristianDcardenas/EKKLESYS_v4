@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 using BLL;
 using ENTITY;
@@ -27,6 +28,7 @@ namespace GUI
         {
             try
             {
+
                 _curso = _cursoService.BuscarPorId(_cursoId);
 
                 if (_curso == null)
@@ -36,17 +38,43 @@ namespace GUI
                     return;
                 }
 
-                var cursosDto = _cursoService.ConsultarDTO();
-                _cursoDto = cursosDto.Find(c => c.id_curso == _cursoId);
+                if (!string.IsNullOrEmpty(_curso.ruta_imagen_curso) && File.Exists(_curso.ruta_imagen_curso))
+                {
+                    try
+                    {
+                        // Usar una copia de la imagen para evitar problemas de "disposed object"
+                        using (var originalImage = Image.FromFile(_curso.ruta_imagen_curso))
+                        {
+                            pictureBox.Image = new Bitmap(originalImage);
+                        }
+                        pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error al cargar la imagen: {ex.Message}");
+                        // No mostramos ninguna imagen si hay error
+                    }
+                    _curso = _cursoService.BuscarPorId(_cursoId);
 
-                // Cargar datos en los controles
-                lblTitulo.Text = _curso.nombre_curso;
-                lblFechas.Text = $"Del {_curso.fecha_inicio_curso:dd/MM/yyyy} al {_curso.fecha_fin_curso:dd/MM/yyyy}";
-                txtDescripcion.Text = _curso.descripcion_curso;
-                lblInscritos.Text = $"Inscritos: {_cursoDto?.NumeroInscritos ?? 0}/{_curso.capacidad_max_curso}";
+                    if (_curso == null)
+                    {
+                        MessageBox.Show("El curso no existe", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        this.Close();
+                        return;
+                    }
 
-                // Configurar visibilidad de botones según rol
-                ConfigurarVisibilidadBotones();
+                    var cursosDto = _cursoService.ConsultarDTO();
+                    _cursoDto = cursosDto.Find(c => c.id_curso == _cursoId);
+
+                    // Cargar datos en los controles
+                    lblTitulo.Text = _curso.nombre_curso;
+                    lblFechas.Text = $"Del {_curso.fecha_inicio_curso:dd/MM/yyyy} al {_curso.fecha_fin_curso:dd/MM/yyyy}";
+                    txtDescripcion.Text = _curso.descripcion_curso;
+                    lblInscritos.Text = $"Inscritos: {_cursoDto?.NumeroInscritos ?? 0}/{_curso.capacidad_max_curso}";
+
+                    // Configurar visibilidad de botones según rol
+                    ConfigurarVisibilidadBotones();
+                }
             }
             catch (Exception ex)
             {

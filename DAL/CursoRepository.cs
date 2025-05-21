@@ -17,6 +17,7 @@ namespace DAL
             this.connectionManager = connectionManager;
         }
 
+
         public void Guardar(Curso curso)
         {
             using (var connection = connectionManager.GetConnection())
@@ -26,24 +27,23 @@ namespace DAL
                 {
                     command.Connection = connection;
                     command.CommandText = @"INSERT INTO Cursos (nombre_curso, descripcion_curso, fecha_inicio_curso, 
-                                          fecha_fin_curso, capacidad_max_curso) 
-                                          VALUES (:nombre_curso, :descripcion_curso, :fecha_inicio_curso, 
-                                          :fecha_fin_curso, :capacidad_max_curso)
-                                          RETURNING id_curso INTO :id_curso";
+                                  fecha_fin_curso, capacidad_max_curso, ruta_imagen_curso) 
+                                  VALUES (:nombre_curso, :descripcion_curso, :fecha_inicio_curso, 
+                                  :fecha_fin_curso, :capacidad_max_curso, :ruta_imagen_curso)
+                                  RETURNING id_curso INTO :id_curso";
 
                     command.Parameters.Add(":nombre_curso", OracleDbType.Varchar2).Value = curso.nombre_curso;
                     command.Parameters.Add(":descripcion_curso", OracleDbType.Varchar2).Value = curso.descripcion_curso;
                     command.Parameters.Add(":fecha_inicio_curso", OracleDbType.Date).Value = curso.fecha_inicio_curso;
                     command.Parameters.Add(":fecha_fin_curso", OracleDbType.Date).Value = curso.fecha_fin_curso;
                     command.Parameters.Add(":capacidad_max_curso", OracleDbType.Int32).Value = curso.capacidad_max_curso;
+                    command.Parameters.Add(":ruta_imagen_curso", OracleDbType.Varchar2).Value =
+                        string.IsNullOrEmpty(curso.ruta_imagen_curso) ? DBNull.Value : (object)curso.ruta_imagen_curso;
 
                     // Parámetro de salida para el ID generado
                     OracleParameter idParam = new OracleParameter(":id_curso", OracleDbType.Int32);
                     idParam.Direction = System.Data.ParameterDirection.Output;
                     command.Parameters.Add(idParam);
-
-                    //command.ExecuteNonQuery();
-                    //curso.id_curso = Convert.ToInt32(idParam.Value);
 
                     command.ExecuteNonQuery();
 
@@ -59,6 +59,50 @@ namespace DAL
                 }
             }
         }
+        //public void Guardar(Curso curso)
+        //{
+        //    using (var connection = connectionManager.GetConnection())
+        //    {
+        //        connection.Open();
+        //        using (var command = new OracleCommand())
+        //        {
+        //            command.Connection = connection;
+        //            command.CommandText = @"INSERT INTO Cursos (nombre_curso, descripcion_curso, fecha_inicio_curso, 
+        //                                  fecha_fin_curso, capacidad_max_curso) 
+        //                                  VALUES (:nombre_curso, :descripcion_curso, :fecha_inicio_curso, 
+        //                                  :fecha_fin_curso, :capacidad_max_curso)
+        //                                  RETURNING id_curso INTO :id_curso";
+
+        //            command.Parameters.Add(":nombre_curso", OracleDbType.Varchar2).Value = curso.nombre_curso;
+        //            command.Parameters.Add(":descripcion_curso", OracleDbType.Varchar2).Value = curso.descripcion_curso;
+        //            command.Parameters.Add(":fecha_inicio_curso", OracleDbType.Date).Value = curso.fecha_inicio_curso;
+        //            command.Parameters.Add(":fecha_fin_curso", OracleDbType.Date).Value = curso.fecha_fin_curso;
+        //            command.Parameters.Add(":capacidad_max_curso", OracleDbType.Int32).Value = curso.capacidad_max_curso;
+
+        //            // Parámetro de salida para el ID generado
+        //            OracleParameter idParam = new OracleParameter(":id_curso", OracleDbType.Int32);
+        //            idParam.Direction = System.Data.ParameterDirection.Output;
+        //            command.Parameters.Add(idParam);
+
+        //            //command.ExecuteNonQuery();
+        //            //curso.id_curso = Convert.ToInt32(idParam.Value);
+
+        //            command.ExecuteNonQuery();
+
+        //            // Solución: Manejar correctamente la conversión de OracleDecimal
+        //            if (idParam.Value is Oracle.ManagedDataAccess.Types.OracleDecimal oracleDecimal)
+        //            {
+        //                curso.id_curso = Convert.ToInt32(oracleDecimal.Value);
+        //            }
+        //            else if (idParam.Value != DBNull.Value && idParam.Value != null)
+        //            {
+        //                curso.id_curso = Convert.ToInt32(idParam.Value);
+        //            }
+        //        }
+        //    }
+        //}
+
+
 
         public void Modificar(Curso curso)
         {
@@ -69,9 +113,9 @@ namespace DAL
                 {
                     command.Connection = connection;
                     command.CommandText = @"UPDATE Cursos SET nombre_curso = :nombre_curso, descripcion_curso = :descripcion_curso, 
-                                          fecha_inicio_curso = :fecha_inicio_curso, fecha_fin_curso = :fecha_fin_curso, 
-                                          capacidad_max_curso = :capacidad_max_curso 
-                                          WHERE id_curso = :id_curso";
+                                  fecha_inicio_curso = :fecha_inicio_curso, fecha_fin_curso = :fecha_fin_curso, 
+                                  capacidad_max_curso = :capacidad_max_curso, ruta_imagen_curso = :ruta_imagen_curso 
+                                  WHERE id_curso = :id_curso";
 
                     command.Parameters.Add(":id_curso", OracleDbType.Int32).Value = curso.id_curso;
                     command.Parameters.Add(":nombre_curso", OracleDbType.Varchar2).Value = curso.nombre_curso;
@@ -79,11 +123,38 @@ namespace DAL
                     command.Parameters.Add(":fecha_inicio_curso", OracleDbType.Date).Value = curso.fecha_inicio_curso;
                     command.Parameters.Add(":fecha_fin_curso", OracleDbType.Date).Value = curso.fecha_fin_curso;
                     command.Parameters.Add(":capacidad_max_curso", OracleDbType.Int32).Value = curso.capacidad_max_curso;
+                    command.Parameters.Add(":ruta_imagen_curso", OracleDbType.Varchar2).Value =
+                        string.IsNullOrEmpty(curso.ruta_imagen_curso) ? DBNull.Value : (object)curso.ruta_imagen_curso;
 
                     command.ExecuteNonQuery();
                 }
             }
         }
+
+        //public void Modificar(Curso curso)
+        //{
+        //    using (var connection = connectionManager.GetConnection())
+        //    {
+        //        connection.Open();
+        //        using (var command = new OracleCommand())
+        //        {
+        //            command.Connection = connection;
+        //            command.CommandText = @"UPDATE Cursos SET nombre_curso = :nombre_curso, descripcion_curso = :descripcion_curso, 
+        //                                  fecha_inicio_curso = :fecha_inicio_curso, fecha_fin_curso = :fecha_fin_curso, 
+        //                                  capacidad_max_curso = :capacidad_max_curso 
+        //                                  WHERE id_curso = :id_curso";
+
+        //            command.Parameters.Add(":id_curso", OracleDbType.Int32).Value = curso.id_curso;
+        //            command.Parameters.Add(":nombre_curso", OracleDbType.Varchar2).Value = curso.nombre_curso;
+        //            command.Parameters.Add(":descripcion_curso", OracleDbType.Varchar2).Value = curso.descripcion_curso;
+        //            command.Parameters.Add(":fecha_inicio_curso", OracleDbType.Date).Value = curso.fecha_inicio_curso;
+        //            command.Parameters.Add(":fecha_fin_curso", OracleDbType.Date).Value = curso.fecha_fin_curso;
+        //            command.Parameters.Add(":capacidad_max_curso", OracleDbType.Int32).Value = curso.capacidad_max_curso;
+
+        //            command.ExecuteNonQuery();
+        //        }
+        //    }
+        //}
 
 
         public void Eliminar(int idCurso)
@@ -218,6 +289,7 @@ namespace DAL
             return cursos;
         }
 
+
         private Curso MapToCurso(OracleDataReader reader)
         {
             return new Curso
@@ -227,8 +299,22 @@ namespace DAL
                 descripcion_curso = reader["descripcion_curso"].ToString(),
                 fecha_inicio_curso = Convert.ToDateTime(reader["fecha_inicio_curso"]),
                 fecha_fin_curso = Convert.ToDateTime(reader["fecha_fin_curso"]),
-                capacidad_max_curso = Convert.ToInt32(reader["capacidad_max_curso"])
+                capacidad_max_curso = Convert.ToInt32(reader["capacidad_max_curso"]),
+                ruta_imagen_curso = reader["ruta_imagen_curso"] != DBNull.Value ? reader["ruta_imagen_curso"].ToString() : null
             };
         }
+
+        //private Curso MapToCurso(OracleDataReader reader)
+        //{
+        //    return new Curso
+        //    {
+        //        id_curso = Convert.ToInt32(reader["id_curso"]),
+        //        nombre_curso = reader["nombre_curso"].ToString(),
+        //        descripcion_curso = reader["descripcion_curso"].ToString(),
+        //        fecha_inicio_curso = Convert.ToDateTime(reader["fecha_inicio_curso"]),
+        //        fecha_fin_curso = Convert.ToDateTime(reader["fecha_fin_curso"]),
+        //        capacidad_max_curso = Convert.ToInt32(reader["capacidad_max_curso"])
+        //    };
+        //}
     }
 }

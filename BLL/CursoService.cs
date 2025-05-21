@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -134,7 +135,8 @@ namespace BLL
                     fecha_inicio_curso = curso.fecha_inicio_curso,
                     fecha_fin_curso = curso.fecha_fin_curso,
                     capacidad_max_curso = curso.capacidad_max_curso,
-                    NumeroInscritos = curso.NumeroInscritos
+                    NumeroInscritos = curso.NumeroInscritos,
+                    ruta_imagen_curso = curso.ruta_imagen_curso
                 });
             }
 

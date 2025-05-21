@@ -1,4 +1,6 @@
-﻿namespace GUI
+﻿using System.Windows.Forms;
+
+namespace GUI
 {
     partial class FrmCursosAdmin
     {
@@ -117,6 +119,8 @@
             this.panel1.PerformLayout();
             this.ResumeLayout(false);
 
+
+            
         }
 
         #endregion

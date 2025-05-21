@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 using BLL;
 using ENTITY;
@@ -21,8 +22,12 @@ namespace GUI
             _cursoId = cursoId;
             CargarCurso();
             ConfigurarBotonInscribir();
+            
         }
 
+
+
+        // Modificar el método CargarCurso para cargar la imagen
         private void CargarCurso()
         {
             try
@@ -44,6 +49,21 @@ namespace GUI
                 lblFechas.Text = $"Del {_curso.fecha_inicio_curso:dd/MM/yyyy} al {_curso.fecha_fin_curso:dd/MM/yyyy}";
                 txtDescripcion.Text = _curso.descripcion_curso;
                 lblInscritos.Text = $"Inscritos: {_cursoDto?.NumeroInscritos ?? 0}/{_curso.capacidad_max_curso}";
+
+                // Cargar la imagen si existe
+                if (!string.IsNullOrEmpty(_curso.ruta_imagen_curso) && File.Exists(_curso.ruta_imagen_curso))
+                {
+                    try
+                    {
+                        pictureBox.Image = Image.FromFile(_curso.ruta_imagen_curso);
+                        pictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
+                    }
+                    catch (Exception ex)
+                    {
+                        // Si hay un error al cargar la imagen, simplemente no la mostramos
+                        Console.WriteLine($"Error al cargar la imagen: {ex.Message}");
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -52,6 +72,7 @@ namespace GUI
                 this.Close();
             }
         }
+
 
         private void ConfigurarBotonInscribir()
         {

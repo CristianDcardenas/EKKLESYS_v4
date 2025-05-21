@@ -105,7 +105,7 @@ namespace GUI
             this.panelHeader.Controls.Add(this.lblTitulo);
             this.panelHeader.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelHeader.Location = new System.Drawing.Point(0, 0);
-            this.panelHeader.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.panelHeader.Margin = new System.Windows.Forms.Padding(4);
             this.panelHeader.Name = "panelHeader";
             this.panelHeader.Size = new System.Drawing.Size(1365, 74);
             this.panelHeader.TabIndex = 0;
@@ -118,7 +118,7 @@ namespace GUI
             this.btnRegistrarse.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnRegistrarse.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(43)))), ((int)(((byte)(94)))));
             this.btnRegistrarse.Location = new System.Drawing.Point(1216, 18);
-            this.btnRegistrarse.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnRegistrarse.Margin = new System.Windows.Forms.Padding(4);
             this.btnRegistrarse.Name = "btnRegistrarse";
             this.btnRegistrarse.Size = new System.Drawing.Size(133, 37);
             this.btnRegistrarse.TabIndex = 2;
@@ -134,7 +134,7 @@ namespace GUI
             this.btnIniciarSesion.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnIniciarSesion.ForeColor = System.Drawing.Color.White;
             this.btnIniciarSesion.Location = new System.Drawing.Point(1061, 18);
-            this.btnIniciarSesion.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnIniciarSesion.Margin = new System.Windows.Forms.Padding(4);
             this.btnIniciarSesion.Name = "btnIniciarSesion";
             this.btnIniciarSesion.Size = new System.Drawing.Size(147, 37);
             this.btnIniciarSesion.TabIndex = 1;
@@ -164,7 +164,7 @@ namespace GUI
             this.panelNavigation.Controls.Add(this.btnInicio);
             this.panelNavigation.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelNavigation.Location = new System.Drawing.Point(0, 74);
-            this.panelNavigation.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.panelNavigation.Margin = new System.Windows.Forms.Padding(4);
             this.panelNavigation.Name = "panelNavigation";
             this.panelNavigation.Size = new System.Drawing.Size(1365, 49);
             this.panelNavigation.TabIndex = 1;
@@ -177,7 +177,7 @@ namespace GUI
             this.btnContacto.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnContacto.ForeColor = System.Drawing.Color.White;
             this.btnContacto.Location = new System.Drawing.Point(533, 0);
-            this.btnContacto.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnContacto.Margin = new System.Windows.Forms.Padding(4);
             this.btnContacto.Name = "btnContacto";
             this.btnContacto.Size = new System.Drawing.Size(133, 49);
             this.btnContacto.TabIndex = 4;
@@ -193,7 +193,7 @@ namespace GUI
             this.btnEventos.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnEventos.ForeColor = System.Drawing.Color.White;
             this.btnEventos.Location = new System.Drawing.Point(400, 0);
-            this.btnEventos.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnEventos.Margin = new System.Windows.Forms.Padding(4);
             this.btnEventos.Name = "btnEventos";
             this.btnEventos.Size = new System.Drawing.Size(133, 49);
             this.btnEventos.TabIndex = 3;
@@ -209,7 +209,7 @@ namespace GUI
             this.btnCursos.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnCursos.ForeColor = System.Drawing.Color.White;
             this.btnCursos.Location = new System.Drawing.Point(267, 0);
-            this.btnCursos.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnCursos.Margin = new System.Windows.Forms.Padding(4);
             this.btnCursos.Name = "btnCursos";
             this.btnCursos.Size = new System.Drawing.Size(133, 49);
             this.btnCursos.TabIndex = 2;
@@ -225,7 +225,7 @@ namespace GUI
             this.btnNosotros.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnNosotros.ForeColor = System.Drawing.Color.White;
             this.btnNosotros.Location = new System.Drawing.Point(133, 0);
-            this.btnNosotros.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnNosotros.Margin = new System.Windows.Forms.Padding(4);
             this.btnNosotros.Name = "btnNosotros";
             this.btnNosotros.Size = new System.Drawing.Size(133, 49);
             this.btnNosotros.TabIndex = 1;
@@ -241,7 +241,7 @@ namespace GUI
             this.btnInicio.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnInicio.ForeColor = System.Drawing.Color.White;
             this.btnInicio.Location = new System.Drawing.Point(0, 0);
-            this.btnInicio.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnInicio.Margin = new System.Windows.Forms.Padding(4);
             this.btnInicio.Name = "btnInicio";
             this.btnInicio.Size = new System.Drawing.Size(133, 49);
             this.btnInicio.TabIndex = 0;
@@ -259,7 +259,7 @@ namespace GUI
             this.tabControlMain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControlMain.ItemSize = new System.Drawing.Size(0, 1);
             this.tabControlMain.Location = new System.Drawing.Point(0, 123);
-            this.tabControlMain.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tabControlMain.Margin = new System.Windows.Forms.Padding(4);
             this.tabControlMain.Name = "tabControlMain";
             this.tabControlMain.SelectedIndex = 0;
             this.tabControlMain.Size = new System.Drawing.Size(1365, 637);
@@ -270,9 +270,9 @@ namespace GUI
             // 
             this.tabInicio.Controls.Add(this.panelBienvenida);
             this.tabInicio.Location = new System.Drawing.Point(4, 5);
-            this.tabInicio.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tabInicio.Margin = new System.Windows.Forms.Padding(4);
             this.tabInicio.Name = "tabInicio";
-            this.tabInicio.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tabInicio.Padding = new System.Windows.Forms.Padding(4);
             this.tabInicio.Size = new System.Drawing.Size(1357, 628);
             this.tabInicio.TabIndex = 0;
             this.tabInicio.Text = "Inicio";
@@ -285,7 +285,7 @@ namespace GUI
             this.panelBienvenida.Controls.Add(this.pictureBoxDashboard);
             this.panelBienvenida.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelBienvenida.Location = new System.Drawing.Point(4, 4);
-            this.panelBienvenida.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.panelBienvenida.Margin = new System.Windows.Forms.Padding(4);
             this.panelBienvenida.Name = "panelBienvenida";
             this.panelBienvenida.Size = new System.Drawing.Size(1349, 620);
             this.panelBienvenida.TabIndex = 0;
@@ -296,7 +296,7 @@ namespace GUI
             this.panel1.Controls.Add(this.lblDescripcionBienvenida);
             this.panel1.Controls.Add(this.btnComenzarAhora);
             this.panel1.Location = new System.Drawing.Point(13, 159);
-            this.panel1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.panel1.Margin = new System.Windows.Forms.Padding(4);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(579, 284);
             this.panel1.TabIndex = 5;
@@ -333,7 +333,7 @@ namespace GUI
             this.btnComenzarAhora.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnComenzarAhora.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(43)))), ((int)(((byte)(94)))));
             this.btnComenzarAhora.Location = new System.Drawing.Point(205, 193);
-            this.btnComenzarAhora.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnComenzarAhora.Margin = new System.Windows.Forms.Padding(4);
             this.btnComenzarAhora.Name = "btnComenzarAhora";
             this.btnComenzarAhora.Size = new System.Drawing.Size(160, 43);
             this.btnComenzarAhora.TabIndex = 3;
@@ -346,7 +346,7 @@ namespace GUI
             this.pictureBoxDashboard.Dock = System.Windows.Forms.DockStyle.Right;
             this.pictureBoxDashboard.Image = global::GUI.Properties.Resources.lakewood;
             this.pictureBoxDashboard.Location = new System.Drawing.Point(208, 0);
-            this.pictureBoxDashboard.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pictureBoxDashboard.Margin = new System.Windows.Forms.Padding(4);
             this.pictureBoxDashboard.Name = "pictureBoxDashboard";
             this.pictureBoxDashboard.Size = new System.Drawing.Size(1141, 620);
             this.pictureBoxDashboard.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -358,10 +358,10 @@ namespace GUI
             // 
             this.tabCursos.Controls.Add(this.flpCursos);
             this.tabCursos.Location = new System.Drawing.Point(4, 5);
-            this.tabCursos.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tabCursos.Margin = new System.Windows.Forms.Padding(4);
             this.tabCursos.Name = "tabCursos";
-            this.tabCursos.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.tabCursos.Size = new System.Drawing.Size(1357, 629);
+            this.tabCursos.Padding = new System.Windows.Forms.Padding(4);
+            this.tabCursos.Size = new System.Drawing.Size(1357, 628);
             this.tabCursos.TabIndex = 1;
             this.tabCursos.Text = "Cursos";
             this.tabCursos.UseVisualStyleBackColor = true;
@@ -371,20 +371,20 @@ namespace GUI
             this.flpCursos.AutoScroll = true;
             this.flpCursos.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flpCursos.Location = new System.Drawing.Point(4, 4);
-            this.flpCursos.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.flpCursos.Margin = new System.Windows.Forms.Padding(4);
             this.flpCursos.Name = "flpCursos";
             this.flpCursos.Padding = new System.Windows.Forms.Padding(13, 12, 13, 12);
-            this.flpCursos.Size = new System.Drawing.Size(1349, 621);
+            this.flpCursos.Size = new System.Drawing.Size(1349, 620);
             this.flpCursos.TabIndex = 0;
             // 
             // tabEventos
             // 
             this.tabEventos.Controls.Add(this.flpEventos);
             this.tabEventos.Location = new System.Drawing.Point(4, 5);
-            this.tabEventos.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tabEventos.Margin = new System.Windows.Forms.Padding(4);
             this.tabEventos.Name = "tabEventos";
-            this.tabEventos.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.tabEventos.Size = new System.Drawing.Size(1357, 629);
+            this.tabEventos.Padding = new System.Windows.Forms.Padding(4);
+            this.tabEventos.Size = new System.Drawing.Size(1357, 628);
             this.tabEventos.TabIndex = 2;
             this.tabEventos.Text = "Eventos";
             this.tabEventos.UseVisualStyleBackColor = true;
@@ -394,10 +394,10 @@ namespace GUI
             this.flpEventos.AutoScroll = true;
             this.flpEventos.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flpEventos.Location = new System.Drawing.Point(4, 4);
-            this.flpEventos.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.flpEventos.Margin = new System.Windows.Forms.Padding(4);
             this.flpEventos.Name = "flpEventos";
             this.flpEventos.Padding = new System.Windows.Forms.Padding(13, 12, 13, 12);
-            this.flpEventos.Size = new System.Drawing.Size(1349, 621);
+            this.flpEventos.Size = new System.Drawing.Size(1349, 620);
             this.flpEventos.TabIndex = 0;
             // 
             // tabContacto
@@ -406,10 +406,10 @@ namespace GUI
             this.tabContacto.Controls.Add(this.lblTituloContacto);
             this.tabContacto.Controls.Add(this.lblDescripcionContacto);
             this.tabContacto.Location = new System.Drawing.Point(4, 5);
-            this.tabContacto.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tabContacto.Margin = new System.Windows.Forms.Padding(4);
             this.tabContacto.Name = "tabContacto";
-            this.tabContacto.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.tabContacto.Size = new System.Drawing.Size(1357, 629);
+            this.tabContacto.Padding = new System.Windows.Forms.Padding(4);
+            this.tabContacto.Size = new System.Drawing.Size(1357, 628);
             this.tabContacto.TabIndex = 4;
             this.tabContacto.Text = "Contacto";
             this.tabContacto.UseVisualStyleBackColor = true;
@@ -425,7 +425,7 @@ namespace GUI
             this.tableLayoutPanel1.Controls.Add(this.panelInfoContacto, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.panelFormContacto, 1, 0);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(27, 123);
-            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
@@ -444,7 +444,7 @@ namespace GUI
             this.panelInfoContacto.Controls.Add(this.lblTelefonoTitulo);
             this.panelInfoContacto.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelInfoContacto.Location = new System.Drawing.Point(4, 4);
-            this.panelInfoContacto.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.panelInfoContacto.Margin = new System.Windows.Forms.Padding(4);
             this.panelInfoContacto.Name = "panelInfoContacto";
             this.panelInfoContacto.Padding = new System.Windows.Forms.Padding(27, 25, 27, 25);
             this.panelInfoContacto.Size = new System.Drawing.Size(512, 450);
@@ -534,7 +534,7 @@ namespace GUI
             this.panelFormContacto.Controls.Add(this.lblNombre);
             this.panelFormContacto.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelFormContacto.Location = new System.Drawing.Point(524, 4);
-            this.panelFormContacto.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.panelFormContacto.Margin = new System.Windows.Forms.Padding(4);
             this.panelFormContacto.Name = "panelFormContacto";
             this.panelFormContacto.Padding = new System.Windows.Forms.Padding(27, 25, 27, 25);
             this.panelFormContacto.Size = new System.Drawing.Size(773, 450);
@@ -549,7 +549,7 @@ namespace GUI
             this.btnEnviarMensaje.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnEnviarMensaje.ForeColor = System.Drawing.Color.White;
             this.btnEnviarMensaje.Location = new System.Drawing.Point(31, 383);
-            this.btnEnviarMensaje.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnEnviarMensaje.Margin = new System.Windows.Forms.Padding(4);
             this.btnEnviarMensaje.Name = "btnEnviarMensaje";
             this.btnEnviarMensaje.Size = new System.Drawing.Size(709, 43);
             this.btnEnviarMensaje.TabIndex = 8;
@@ -563,7 +563,7 @@ namespace GUI
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtMensaje.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtMensaje.Location = new System.Drawing.Point(31, 252);
-            this.txtMensaje.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtMensaje.Margin = new System.Windows.Forms.Padding(4);
             this.txtMensaje.Multiline = true;
             this.txtMensaje.Name = "txtMensaje";
             this.txtMensaje.Size = new System.Drawing.Size(708, 122);
@@ -586,7 +586,7 @@ namespace GUI
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtAsunto.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtAsunto.Location = new System.Drawing.Point(31, 191);
-            this.txtAsunto.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtAsunto.Margin = new System.Windows.Forms.Padding(4);
             this.txtAsunto.Name = "txtAsunto";
             this.txtAsunto.Size = new System.Drawing.Size(708, 27);
             this.txtAsunto.TabIndex = 5;
@@ -608,7 +608,7 @@ namespace GUI
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtEmail.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtEmail.Location = new System.Drawing.Point(391, 62);
-            this.txtEmail.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtEmail.Margin = new System.Windows.Forms.Padding(4);
             this.txtEmail.Name = "txtEmail";
             this.txtEmail.Size = new System.Drawing.Size(348, 27);
             this.txtEmail.TabIndex = 3;
@@ -628,7 +628,7 @@ namespace GUI
             // 
             this.txtNombre.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtNombre.Location = new System.Drawing.Point(31, 62);
-            this.txtNombre.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtNombre.Margin = new System.Windows.Forms.Padding(4);
             this.txtNombre.Name = "txtNombre";
             this.txtNombre.Size = new System.Drawing.Size(332, 27);
             this.txtNombre.TabIndex = 1;
@@ -679,7 +679,7 @@ namespace GUI
             this.panelFooter.Controls.Add(this.lblFooterLogo);
             this.panelFooter.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panelFooter.Location = new System.Drawing.Point(0, 760);
-            this.panelFooter.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.panelFooter.Margin = new System.Windows.Forms.Padding(4);
             this.panelFooter.Name = "panelFooter";
             this.panelFooter.Size = new System.Drawing.Size(1365, 62);
             this.panelFooter.TabIndex = 3;
@@ -760,11 +760,12 @@ namespace GUI
             this.Controls.Add(this.panelFooter);
             this.Controls.Add(this.panelNavigation);
             this.Controls.Add(this.panelHeader);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.MinimumSize = new System.Drawing.Size(1061, 728);
             this.Name = "FrmInicio2";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Sistema de Gestión de Iglesia - EKKLESYS";
+            this.Load += new System.EventHandler(this.FrmInicio2_Load);
             this.panelHeader.ResumeLayout(false);
             this.panelHeader.PerformLayout();
             this.panelNavigation.ResumeLayout(false);

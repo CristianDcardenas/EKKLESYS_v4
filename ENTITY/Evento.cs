@@ -17,6 +17,8 @@ namespace ENTITY
         public int capacidad_max_evento { get; set; }
         public List<Usuario> Asistentes { get; set; }
 
+        public string ruta_imagen_evento { get; set; }
+
         public Evento()
         {
             Asistentes = new List<Usuario>();

@@ -60,9 +60,14 @@ namespace GUI
 
         private void btnRegistrarse_Click(object sender, EventArgs e)
         {
-            RegistroForm registroForm = new RegistroForm();
-            registroForm.Show();
+
             this.Hide();
+            using (RegistroForm registroForm = new RegistroForm())
+            {
+                registroForm.ShowDialog();
+            }
+            this.Show();
+            
         }
 
         private void FrmLogin_FormClosed(object sender, FormClosedEventArgs e)
@@ -90,9 +95,12 @@ namespace GUI
 
         private void lblinkRegistrarse_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            RegistroForm registroForm = new RegistroForm();
-            registroForm.Show();
             this.Hide();
+            using (RegistroForm registroForm = new RegistroForm())
+            {
+                registroForm.ShowDialog();
+            }
+            this.Show();
         }
 
         private void label5_Click(object sender, EventArgs e)

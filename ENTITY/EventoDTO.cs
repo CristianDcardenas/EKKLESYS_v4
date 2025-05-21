@@ -16,5 +16,6 @@ namespace ENTITY
         public DateTime fecha_fin_evento { get; set; }
         public int capacidad_max_evento { get; set; }
         public int NumeroAsistentes { get; set; }
+        public string ruta_imagen_evento { get; set; }
     }
 }

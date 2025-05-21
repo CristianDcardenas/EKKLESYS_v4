@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 using BLL;
 using ENTITY;
@@ -21,8 +22,10 @@ namespace GUI
             _eventoId = eventoId;
             CargarEvento();
             ConfigurarBotonAsistir();
+            
         }
 
+        // Modificar el método CargarEvento para cargar la imagen
         private void CargarEvento()
         {
             try
@@ -46,6 +49,21 @@ namespace GUI
                 txtDescripcion.Text = _evento.descripcion_evento;
                 lblAsistentes.Text = $"Asistentes: {_eventoDto?.NumeroAsistentes ?? 0}/{_evento.capacidad_max_evento}";
 
+                // Cargar la imagen si existe
+                if (!string.IsNullOrEmpty(_evento.ruta_imagen_evento) && File.Exists(_evento.ruta_imagen_evento))
+                {
+                    try
+                    {
+                        pictureBox.Image = Image.FromFile(_evento.ruta_imagen_evento);
+                        pictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
+                    }
+                    catch (Exception ex)
+                    {
+                        // Si hay un error al cargar la imagen, simplemente no la mostramos
+                        Console.WriteLine($"Error al cargar la imagen: {ex.Message}");
+                    }
+                }
+
                 // Verificar asistencia del usuario
                 //VerificarAsistenciaUsuario();
             }
@@ -56,6 +74,41 @@ namespace GUI
                 this.Close();
             }
         }
+
+
+        //private void CargarEvento()
+        //{
+        //    try
+        //    {
+        //        _evento = _eventoService.BuscarPorId(_eventoId);
+
+        //        if (_evento == null)
+        //        {
+        //            MessageBox.Show("El evento no existe", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //            this.Close();
+        //            return;
+        //        }
+
+        //        var eventosDto = _eventoService.ConsultarDTO();
+        //        _eventoDto = eventosDto.Find(e => e.id_evento == _eventoId);
+
+        //        // Cargar datos en los controles
+        //        lblTitulo.Text = _evento.nombre_evento;
+        //        lblFechas.Text = $"Del {_evento.fecha_inicio_evento:dd/MM/yyyy} al {_evento.fecha_fin_evento:dd/MM/yyyy}";
+        //        lblLugar.Text = $"Lugar: {_evento.lugar_evento}";
+        //        txtDescripcion.Text = _evento.descripcion_evento;
+        //        lblAsistentes.Text = $"Asistentes: {_eventoDto?.NumeroAsistentes ?? 0}/{_evento.capacidad_max_evento}";
+
+        //        // Verificar asistencia del usuario
+        //        //VerificarAsistenciaUsuario();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show($"Error al cargar el evento: {ex.Message}", "Error",
+        //            MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //        this.Close();
+        //    }
+        //}
 
         //private void VerificarAsistenciaUsuario()
         //{

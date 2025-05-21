@@ -135,7 +135,8 @@ namespace BLL
                     fecha_inicio_evento = evento.fecha_inicio_evento,
                     fecha_fin_evento = evento.fecha_fin_evento,
                     capacidad_max_evento = evento.capacidad_max_evento,
-                    NumeroAsistentes = evento.NumeroAsistentes
+                    NumeroAsistentes = evento.NumeroAsistentes,
+                    ruta_imagen_evento = evento.ruta_imagen_evento
                 });
             }
 

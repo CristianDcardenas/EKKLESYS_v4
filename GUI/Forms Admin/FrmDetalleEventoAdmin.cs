@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
+using System.Windows.Input;
 using BLL;
 using ENTITY;
 using FontAwesome.Sharp;
@@ -27,8 +29,8 @@ namespace GUI
         {
             try
             {
-                _evento = _eventoService.BuscarPorId(_eventoId);
 
+                _evento = _eventoService.BuscarPorId(_eventoId);
                 if (_evento == null)
                 {
                     MessageBox.Show("El evento no existe", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -36,18 +38,44 @@ namespace GUI
                     return;
                 }
 
-                var eventosDto = _eventoService.ConsultarDTO();
-                _eventoDto = eventosDto.Find(e => e.id_evento == _eventoId);
+            if (!string.IsNullOrEmpty(_evento.ruta_imagen_evento) && File.Exists(_evento.ruta_imagen_evento))
+                {
+                    try
+                    {
+                        // Usar una copia de la imagen para evitar problemas de "disposed object"
+                        using (var originalImage = Image.FromFile(_evento.ruta_imagen_evento))
+                        {
+                            pictureBox.Image = new Bitmap(originalImage);
+                        }
+                        pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error al cargar la imagen: {ex.Message}");
+                        // No mostramos ninguna imagen si hay error
+                    }
+                    _evento = _eventoService.BuscarPorId(_eventoId);
 
-                // Cargar datos en los controles
-                lblTitulo.Text = _evento.nombre_evento;
-                lblFechas.Text = $"Del {_evento.fecha_inicio_evento:dd/MM/yyyy} al {_evento.fecha_fin_evento:dd/MM/yyyy}";
-                lblLugar.Text = $"Lugar: {_evento.lugar_evento}";
-                txtDescripcion.Text = _evento.descripcion_evento;
-                lblAsistentes.Text = $"Asistentes: {_eventoDto?.NumeroAsistentes ?? 0}/{_evento.capacidad_max_evento}";
+                    if (_evento == null)
+                    {
+                        MessageBox.Show("El evento no existe", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        this.Close();
+                        return;
+                    }
 
-                // Configurar visibilidad de botones según rol
-                ConfigurarVisibilidadBotones();
+                    var eventosDto = _eventoService.ConsultarDTO();
+                    _eventoDto = eventosDto.Find(e => e.id_evento == _eventoId);
+
+                    // Cargar datos en los controles
+                    lblTitulo.Text = _evento.nombre_evento;
+                    lblFechas.Text = $"Del {_evento.fecha_inicio_evento:dd/MM/yyyy} al {_evento.fecha_fin_evento:dd/MM/yyyy}";
+                    lblLugar.Text = $"Lugar: {_evento.lugar_evento}";
+                    txtDescripcion.Text = _evento.descripcion_evento;
+                    lblAsistentes.Text = $"Asistentes: {_eventoDto?.NumeroAsistentes ?? 0}/{_evento.capacidad_max_evento}";
+
+                    // Configurar visibilidad de botones según rol
+                    ConfigurarVisibilidadBotones();
+                }
             }
             catch (Exception ex)
             {

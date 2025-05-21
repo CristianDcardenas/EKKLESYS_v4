@@ -64,6 +64,15 @@ namespace GUI
                         Console.WriteLine($"Error al cargar la imagen: {ex.Message}");
                     }
                 }
+                // Determinar si el usuario ya está inscrito
+                bool yaInscrito = false;
+                if (Session.CurrentUser != null)
+                {
+                    yaInscrito = _cursoService.ConsultarEstudiantes(_cursoId)
+                        .Exists(u => u.id_usuario == Session.CurrentUser.id_usuario);
+                }
+                btnInscribir.Tag = yaInscrito;
+                ActualizarEstadoBotonInscribir();
             }
             catch (Exception ex)
             {
@@ -73,6 +82,29 @@ namespace GUI
             }
         }
 
+        private void ActualizarEstadoBotonInscribir()
+        {
+            if (Session.CurrentUser == null)
+            {
+                btnInscribir.Text = "Asistir";
+                btnInscribir.BackColor = Color.FromArgb(0, 123, 255);
+                return;
+            }
+
+            bool yaRegistrado = (bool)btnInscribir.Tag;
+
+            if (yaRegistrado)
+            {
+                btnInscribir.Text = "Cancelar asistencia";
+                btnInscribir.BackColor = Color.FromArgb(220, 53, 69); // Rojo
+            }
+            else
+            {
+                btnInscribir.Text = "Confirmar asistencia";
+                btnInscribir.BackColor = Color.FromArgb(40, 167, 69); // Verde
+            }
+        }
+        
 
         private void ConfigurarBotonInscribir()
         {
@@ -85,48 +117,59 @@ namespace GUI
             btnInscribir.IconColor = Color.White;
             btnInscribir.IconSize = 24;
             btnInscribir.TextImageRelation = TextImageRelation.ImageBeforeText;
-            btnInscribir.Click += btnInscribir_Click;
+            //btnInscribir.Click += btnInscribir_Click;
         }
 
         private void btnInscribir_Click(object sender, EventArgs e)
         {
             try
             {
-
                 if (Session.CurrentUser == null)
                 {
                     MessageBox.Show("Debe iniciar sesión o registrarse para inscribirse en un curso.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
 
-                if (_cursoDto?.NumeroInscritos >= _curso.capacidad_max_curso)
+                bool yaInscrito = btnInscribir.Tag != null && (bool)btnInscribir.Tag;
+                string resultado;
+
+                if (yaInscrito)
                 {
-                    MessageBox.Show("El curso ha alcanzado su capacidad máxima", "Cupo lleno",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    return;
-                }
+                    // Cancelar inscripción
+                    var confirmacion = MessageBox.Show(
+                        $"¿Desea cancelar su inscripción en el curso: {_curso.nombre_curso}?",
+                        "Cancelar inscripción",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question,
+                        MessageBoxDefaultButton.Button2);
 
-                var confirmacion = MessageBox.Show(
-                    $"¿Desea inscribirse en el curso: {_curso.nombre_curso}?",
-                    "Confirmar inscripción",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question,
-                    MessageBoxDefaultButton.Button2);
-
-                if (confirmacion == DialogResult.Yes)
-                {
-                    var resultado = _cursoService.Inscribirse(Session.CurrentUser.id_usuario, _cursoId);
-
-                    if (resultado.StartsWith("Error"))
+                    if (confirmacion == DialogResult.Yes)
                     {
-                        MessageBox.Show(resultado, "Error al inscribir",
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        resultado = _cursoService.CancelarInscripcion(Session.CurrentUser.id_usuario, _cursoId);
+                        MessageBox.Show(resultado, "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        CargarCurso();
                     }
-                    else
+                }
+                else
+                {
+                    if (_cursoDto?.NumeroInscritos >= _curso.capacidad_max_curso)
                     {
-                        MessageBox.Show("Inscripción exitosa", "Éxito",
+                        MessageBox.Show("El curso ha alcanzado su capacidad máxima", "Cupo lleno",
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        // Actualizar el número de inscritos
+                        return;
+                    }
+
+                    var confirmacion = MessageBox.Show(
+                        $"¿Desea inscribirse en el curso: {_curso.nombre_curso}?",
+                        "Confirmar inscripción",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question,
+                        MessageBoxDefaultButton.Button2);
+
+                    if (confirmacion == DialogResult.Yes)
+                    {
+                        resultado = _cursoService.Inscribirse(Session.CurrentUser.id_usuario, _cursoId);
+                        MessageBox.Show(resultado, "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         CargarCurso();
                     }
                 }

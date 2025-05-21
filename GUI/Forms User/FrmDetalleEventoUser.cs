@@ -63,9 +63,16 @@ namespace GUI
                         Console.WriteLine($"Error al cargar la imagen: {ex.Message}");
                     }
                 }
+                // Determinar si el usuario ya está registrado
+                bool yaRegistrado = false;
+                if (Session.CurrentUser != null)
+                {
+                    yaRegistrado = _eventoService.ConsultarAsistentes(_eventoId)
+                        .Exists(u => u.id_usuario == Session.CurrentUser.id_usuario);
+                }
+                btnAsistir.Tag = yaRegistrado;
+                ActualizarEstadoBotonAsistir();
 
-                // Verificar asistencia del usuario
-                //VerificarAsistenciaUsuario();
             }
             catch (Exception ex)
             {
@@ -74,50 +81,6 @@ namespace GUI
                 this.Close();
             }
         }
-
-
-        //private void CargarEvento()
-        //{
-        //    try
-        //    {
-        //        _evento = _eventoService.BuscarPorId(_eventoId);
-
-        //        if (_evento == null)
-        //        {
-        //            MessageBox.Show("El evento no existe", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //            this.Close();
-        //            return;
-        //        }
-
-        //        var eventosDto = _eventoService.ConsultarDTO();
-        //        _eventoDto = eventosDto.Find(e => e.id_evento == _eventoId);
-
-        //        // Cargar datos en los controles
-        //        lblTitulo.Text = _evento.nombre_evento;
-        //        lblFechas.Text = $"Del {_evento.fecha_inicio_evento:dd/MM/yyyy} al {_evento.fecha_fin_evento:dd/MM/yyyy}";
-        //        lblLugar.Text = $"Lugar: {_evento.lugar_evento}";
-        //        txtDescripcion.Text = _evento.descripcion_evento;
-        //        lblAsistentes.Text = $"Asistentes: {_eventoDto?.NumeroAsistentes ?? 0}/{_evento.capacidad_max_evento}";
-
-        //        // Verificar asistencia del usuario
-        //        //VerificarAsistenciaUsuario();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show($"Error al cargar el evento: {ex.Message}", "Error",
-        //            MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //        this.Close();
-        //    }
-        //}
-
-        //private void VerificarAsistenciaUsuario()
-        //{
-        //    if (Session.CurrentUser == null) return;
-
-        //    bool yaRegistrado = _eventoService.VerificarAsistencia(Session.CurrentUser.id_usuario, _eventoId);
-        //    btnAsistir.Tag = yaRegistrado;
-        //    ActualizarEstadoBotonAsistir();
-        //}
 
         private void ActualizarEstadoBotonAsistir()
         {
@@ -152,7 +115,7 @@ namespace GUI
             btnAsistir.IconColor = Color.White;
             btnAsistir.IconSize = 24;
             btnAsistir.TextImageRelation = TextImageRelation.ImageBeforeText;
-            btnAsistir.Click += btnAsistir_Click;
+            //btnAsistir.Click += btnAsistir_Click;
         }
 
         private void btnAsistir_Click(object sender, EventArgs e)
@@ -190,8 +153,8 @@ namespace GUI
 
             MessageBox.Show(mensaje, "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
             CargarEvento(); // Recargar para actualizar el estado
+            ActualizarEstadoBotonAsistir();
         }
-
         private void FrmDetalleEventoUser_Load(object sender, EventArgs e)
         {
             // Configuraciones adicionales al cargar el formulario

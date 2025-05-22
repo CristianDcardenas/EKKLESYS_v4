@@ -160,5 +160,52 @@ namespace GUI
         {
 
         }
+
+        // Métodos para los efectos hover de los botones
+        private void btnRegistrar_MouseEnter(object sender, EventArgs e)
+        {
+            btnRegistrar.BackColor = Color.FromArgb(31, 81, 255); // Un azul más oscuro al pasar el mouse
+        }
+
+        private void btnRegistrar_MouseLeave(object sender, EventArgs e)
+        {
+            btnRegistrar.BackColor = Color.FromArgb(41, 98, 255); // Color original
+        }
+
+        private void btnCancelar_MouseEnter(object sender, EventArgs e)
+        {
+            btnCancelar.BackColor = Color.FromArgb(240, 240, 240); // Gris claro al pasar el mouse
+        }
+
+        private void btnCancelar_MouseLeave(object sender, EventArgs e)
+        {
+            btnCancelar.BackColor = Color.White; // Color original
+        }
+
+        private void btnSeleccionarImagen_MouseEnter(object sender, EventArgs e)
+        {
+            btnSeleccionarImagen.BackColor = Color.FromArgb(240, 240, 240); // Gris claro al pasar el mouse
+        }
+
+        private void btnSeleccionarImagen_MouseLeave(object sender, EventArgs e)
+        {
+            btnSeleccionarImagen.BackColor = Color.White; // Color original
+        }
+
+        // Métodos para mostrar/ocultar contraseña
+        private void btnTogglePass1_Click(object sender, EventArgs e)
+        {
+            txtPassword.PasswordChar = txtPassword.PasswordChar == '•' ? '\0' : '•';
+        }
+
+        private void btnTogglePass2_Click(object sender, EventArgs e)
+        {
+            txtConfirmarPassword.PasswordChar = txtConfirmarPassword.PasswordChar == '•' ? '\0' : '•';
+        }
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
     }
 }

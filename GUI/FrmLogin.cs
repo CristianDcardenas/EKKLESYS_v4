@@ -47,12 +47,12 @@ namespace GUI
             if (usuario.es_administrador == "S")
             {
                 FrmPrincipalAdmin frmPrincipalAdmin = new FrmPrincipalAdmin();
-                frmPrincipalAdmin.Show();
+                frmPrincipalAdmin.ShowDialog();
             }
             else
             {
                 FrmPrincipalUser frmPrincipalUser = new FrmPrincipalUser();
-                frmPrincipalUser.Show();
+                frmPrincipalUser.ShowDialog();
             }
 
             this.Hide();

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using BLL;
 using ENTITY;
@@ -13,6 +14,7 @@ namespace GUI
     {
         private readonly CursoService cursoService;
         private List<CursoDTO> cursos;
+        private List<CursoDTO> cursosFiltrados;
 
         public FrmCursosUser()
         {
@@ -24,11 +26,24 @@ namespace GUI
         private void CargarCursos()
         {
             cursos = cursoService.ConsultarDTO();
+            cursosFiltrados = null;
+            txtSearch.Text = "Buscar curso...";
+            MostrarCursos(cursos);
+            label1.Text = $"Cursos Disponibles ({cursos.Count})";
+        }
+
+        private void MostrarCursos(List<CursoDTO> cursosAMostrar)
+        {
             flpCursos.Controls.Clear();
 
-            foreach (var curso in cursos)
+            if (cursosAMostrar == null || cursosAMostrar.Count == 0)
             {
-                // Panel principal con esquinas redondeadas y sombra
+                MostrarMensajeNoHayCursos();
+                return;
+            }
+
+            foreach (var curso in cursosAMostrar)
+            {
                 Panel panel = new Panel
                 {
                     Width = 320,
@@ -36,12 +51,9 @@ namespace GUI
                     Margin = new Padding(15),
                     BackColor = Color.White
                 };
-
-                // Aplicar efecto de sombra y bordes redondeados
                 ApplyRoundedCorners(panel, 10);
                 ApplyShadowEffect(panel);
 
-                // Contenedor para la imagen con altura fija
                 Panel imageContainer = new Panel
                 {
                     Width = 320,
@@ -50,17 +62,15 @@ namespace GUI
                     BackColor = Color.FromArgb(240, 240, 240)
                 };
 
-                // PictureBox para la imagen con mejor adaptación
                 PictureBox pictureBox = new PictureBox
                 {
                     Width = 320,
                     Height = 180,
                     Dock = DockStyle.Fill,
-                    SizeMode = PictureBoxSizeMode.Zoom, // Mejor adaptación de la imagen
+                    SizeMode = PictureBoxSizeMode.Zoom,
                     BackColor = Color.Transparent
                 };
 
-                // Cargar la imagen si existe
                 if (!string.IsNullOrEmpty(curso.ruta_imagen_curso) && File.Exists(curso.ruta_imagen_curso))
                 {
                     try
@@ -81,7 +91,6 @@ namespace GUI
                 imageContainer.Controls.Add(pictureBox);
                 panel.Controls.Add(imageContainer);
 
-                // Panel para el contenido
                 Panel contentPanel = new Panel
                 {
                     Width = 320,
@@ -91,19 +100,17 @@ namespace GUI
                     Padding = new Padding(15)
                 };
 
-                // Título del curso con estilo moderno
                 Label lblNombre = new Label
                 {
                     Text = curso.nombre_curso,
-                    Font = new Font("Segoe UI Semibold", 14),
+                    Font = new Font("Segoe UI", 14, FontStyle.Bold),
                     ForeColor = Color.FromArgb(50, 50, 50),
                     Width = 290,
                     Height = 30,
                     Location = new Point(15, 10),
-                    AutoEllipsis = true // Añade "..." si el texto es demasiado largo
+                    AutoEllipsis = true
                 };
 
-                // Fechas con icono
                 Panel fechasPanel = new Panel
                 {
                     Width = 290,
@@ -133,7 +140,6 @@ namespace GUI
                 fechasPanel.Controls.Add(calendarIcon);
                 fechasPanel.Controls.Add(lblFechas);
 
-                // Panel para inscritos con icono
                 Panel inscritosPanel = new Panel
                 {
                     Width = 290,
@@ -163,25 +169,22 @@ namespace GUI
                 inscritosPanel.Controls.Add(userIcon);
                 inscritosPanel.Controls.Add(lblCapacidad);
 
-                // Barra de progreso moderna
                 Panel progressContainer = new Panel
                 {
                     Width = 290,
                     Height = 6,
                     Location = new Point(15, 105),
-                    BackColor = Color.FromArgb(230, 230, 230),
-                    Padding = new Padding(0)
+                    BackColor = Color.FromArgb(230, 230, 230)
                 };
                 ApplyRoundedCorners(progressContainer, 3);
 
-                // Calcular el ancho de la barra de progreso
                 int progressWidth = curso.capacidad_max_curso > 0
                     ? (int)((double)curso.NumeroInscritos / curso.capacidad_max_curso * 290)
                     : 0;
 
                 Panel progressBar = new Panel
                 {
-                    Width = Math.Max(progressWidth, 5), // Al menos 5px de ancho
+                    Width = Math.Max(progressWidth, 5),
                     Height = 6,
                     Location = new Point(0, 0),
                     BackColor = GetProgressColor(curso.NumeroInscritos, curso.capacidad_max_curso)
@@ -190,7 +193,6 @@ namespace GUI
 
                 progressContainer.Controls.Add(progressBar);
 
-                // Botón moderno para ver detalles
                 Button btnVerDetalles = new Button
                 {
                     Text = "Ver detalles",
@@ -199,43 +201,120 @@ namespace GUI
                     Location = new Point(15, 160),
                     Tag = curso.id_curso,
                     FlatStyle = FlatStyle.Flat,
-                    BackColor = Color.FromArgb(240, 240, 240),
-                    ForeColor = Color.FromArgb(60, 60, 60),
+                    BackColor = Color.FromArgb(52, 73, 94),
+                    ForeColor = Color.White,
                     Font = new Font("Segoe UI", 10, FontStyle.Regular),
                     Cursor = Cursors.Hand
                 };
                 btnVerDetalles.FlatAppearance.BorderSize = 0;
                 ApplyRoundedCorners(btnVerDetalles, 5);
 
-                // Usar una variable local para el evento Click para evitar problemas de "disposed object"
                 int cursoId = curso.id_curso;
-                btnVerDetalles.Click += (sender, e) => {
-                    MostrarDetallesCurso(cursoId);
-                };
+                btnVerDetalles.Click += (sender, e) => MostrarDetallesCurso(cursoId);
 
-
-                // Agregar controles al panel de contenido
                 contentPanel.Controls.Add(lblNombre);
                 contentPanel.Controls.Add(fechasPanel);
                 contentPanel.Controls.Add(inscritosPanel);
                 contentPanel.Controls.Add(progressContainer);
                 contentPanel.Controls.Add(btnVerDetalles);
 
-                // Agregar el panel de contenido al panel principal
                 panel.Controls.Add(contentPanel);
-
-                // Agregar panel al FlowLayoutPanel
                 flpCursos.Controls.Add(panel);
             }
         }
 
-        // Método para crear una imagen por defecto más moderna
+        private void MostrarMensajeNoHayCursos()
+        {
+            Panel panelNoResults = new Panel
+            {
+                Width = flpCursos.Width - 100,
+                Height = 150,
+                BackColor = Color.White,
+                Margin = new Padding(50, 100, 50, 0)
+            };
+
+            Label lblNoHayCursos = new Label
+            {
+                Text = "No se encontraron cursos con los criterios seleccionados",
+                Font = new Font("Segoe UI", 14, FontStyle.Regular),
+                AutoSize = false,
+                TextAlign = ContentAlignment.MiddleCenter,
+                Width = panelNoResults.Width - 40,
+                Height = 40,
+                Location = new Point(20, 55)
+            };
+
+            panelNoResults.Controls.Add(lblNoHayCursos);
+            flpCursos.Controls.Add(panelNoResults);
+        }
+
+        private void MostrarDetallesCurso(int cursoId)
+        {
+            try
+            {
+                using (FrmDetalleCursoUser detalleForm = new FrmDetalleCursoUser(cursoId))
+                {
+                    detalleForm.ShowDialog(this);
+                }
+                CargarCursos();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al mostrar detalles: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnRefrescar_Click(object sender, EventArgs e)
+        {
+            CargarCursos();
+        }
+
+        private void btnSearch_Click(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(txtSearch.Text) && txtSearch.Text != "Buscar curso...")
+            {
+                cursos = cursoService.ConsultarDTO();
+                string busqueda = txtSearch.Text.ToLower();
+                cursosFiltrados = cursos.Where(c => c.nombre_curso.ToLower().Contains(busqueda)).ToList();
+                MostrarCursos(cursosFiltrados);
+                label1.Text = $"Resultados de búsqueda ({cursosFiltrados.Count})";
+            }
+            else
+            {
+                CargarCursos();
+            }
+        }
+
+        private void txtSearch_Enter(object sender, EventArgs e)
+        {
+            if (txtSearch.Text == "Buscar curso...")
+            {
+                txtSearch.Text = "";
+            }
+        }
+
+        private void txtSearch_Leave(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtSearch.Text))
+            {
+                txtSearch.Text = "Buscar curso...";
+            }
+        }
+
+        private void txtSearch_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.SuppressKeyPress = true;
+                btnSearch_Click(sender, e);
+            }
+        }
+
         private void CrearImagenPorDefectoModerna(PictureBox pictureBox)
         {
             Bitmap bmp = new Bitmap(pictureBox.Width, pictureBox.Height);
             using (Graphics g = Graphics.FromImage(bmp))
             {
-                // Fondo degradado suave
                 using (LinearGradientBrush brush = new LinearGradientBrush(
                     new Rectangle(0, 0, pictureBox.Width, pictureBox.Height),
                     Color.FromArgb(240, 240, 240),
@@ -245,37 +324,27 @@ namespace GUI
                     g.FillRectangle(brush, 0, 0, pictureBox.Width, pictureBox.Height);
                 }
 
-                // Icono de imagen
                 int iconSize = 48;
                 int iconX = (pictureBox.Width - iconSize) / 2;
                 int iconY = (pictureBox.Height - iconSize) / 2 - 10;
 
-                // Dibujar un icono de imagen simple
                 using (Pen pen = new Pen(Color.FromArgb(180, 180, 180), 2))
                 {
-                    // Rectángulo del marco de la imagen
                     g.DrawRectangle(pen, iconX, iconY, iconSize, iconSize);
-
-                    // Montaña dentro del marco
                     Point[] trianglePoints = {
-                new Point(iconX + 10, iconY + iconSize - 10),
-                new Point(iconX + iconSize/2 - 5, iconY + iconSize/2),
-                new Point(iconX + iconSize/2 + 15, iconY + iconSize - 10)
-            };
+                        new Point(iconX + 10, iconY + iconSize - 10),
+                        new Point(iconX + iconSize/2 - 5, iconY + iconSize/2),
+                        new Point(iconX + iconSize/2 + 15, iconY + iconSize - 10)
+                    };
                     g.DrawLines(pen, trianglePoints);
-
-                    // Sol/círculo
                     g.DrawEllipse(pen, iconX + iconSize - 20, iconY + 10, 10, 10);
                 }
 
-                // Texto "Sin imagen" con fuente moderna
                 using (Font font = new Font("Segoe UI", 11, FontStyle.Regular))
                 using (StringFormat sf = new StringFormat())
                 {
                     sf.Alignment = StringAlignment.Center;
                     sf.LineAlignment = StringAlignment.Center;
-
-                    // Dibujar el texto debajo del icono
                     RectangleF textRect = new RectangleF(0, iconY + iconSize + 10, pictureBox.Width, 30);
                     g.DrawString("Sin imagen", font, Brushes.Gray, textRect, sf);
                 }
@@ -283,7 +352,6 @@ namespace GUI
             pictureBox.Image = bmp;
         }
 
-        // Método para aplicar esquinas redondeadas a un control
         private void ApplyRoundedCorners(Control control, int radius)
         {
             using (GraphicsPath path = new GraphicsPath())
@@ -293,17 +361,14 @@ namespace GUI
                 path.AddArc(control.Width - radius * 2, control.Height - radius * 2, radius * 2, radius * 2, 0, 90);
                 path.AddArc(0, control.Height - radius * 2, radius * 2, radius * 2, 90, 90);
                 path.CloseAllFigures();
-
                 control.Region = new Region(path);
             }
         }
 
-        // Método para aplicar efecto de sombra
         private void ApplyShadowEffect(Panel panel)
         {
             panel.Paint += (sender, e) =>
             {
-                // Dibujar borde suave
                 using (Pen pen = new Pen(Color.FromArgb(20, 0, 0, 0), 1))
                 {
                     e.Graphics.DrawRectangle(pen, 0, 0, panel.Width - 1, panel.Height - 1);
@@ -311,13 +376,10 @@ namespace GUI
             };
         }
 
-        // Método para determinar el color de la barra de progreso según el porcentaje
         private Color GetProgressColor(int inscritos, int capacidad)
         {
-            if (capacidad == 0) return Color.FromArgb(76, 175, 80); // Verde por defecto
-
+            if (capacidad == 0) return Color.FromArgb(76, 175, 80);
             double porcentaje = (double)inscritos / capacidad;
-
             if (porcentaje < 0.5)
                 return Color.FromArgb(76, 175, 80); // Verde
             else if (porcentaje < 0.75)
@@ -326,7 +388,6 @@ namespace GUI
                 return Color.FromArgb(244, 67, 54); // Rojo
         }
 
-        // Método para crear un icono de calendario simple
         private Bitmap CreateCalendarIcon()
         {
             Bitmap bmp = new Bitmap(16, 16);
@@ -335,11 +396,8 @@ namespace GUI
                 g.Clear(Color.Transparent);
                 using (Pen pen = new Pen(Color.FromArgb(100, 100, 100), 1))
                 {
-                    // Dibujar el marco del calendario
                     g.DrawRectangle(pen, 1, 3, 13, 12);
-                    // Dibujar líneas horizontales
                     g.DrawLine(pen, 1, 7, 14, 7);
-                    // Dibujar "patas" del calendario
                     g.DrawLine(pen, 4, 1, 4, 3);
                     g.DrawLine(pen, 11, 1, 11, 3);
                 }
@@ -347,7 +405,6 @@ namespace GUI
             return bmp;
         }
 
-        // Método para crear un icono de usuario simple
         private Bitmap CreateUserIcon()
         {
             Bitmap bmp = new Bitmap(16, 16);
@@ -356,45 +413,21 @@ namespace GUI
                 g.Clear(Color.Transparent);
                 using (Pen pen = new Pen(Color.FromArgb(100, 100, 100), 1))
                 {
-                    // Dibujar la cabeza
                     g.DrawEllipse(pen, 5, 1, 6, 6);
-                    // Dibujar el cuerpo
                     g.DrawArc(pen, 2, 7, 12, 12, 180, 180);
                 }
             }
             return bmp;
         }
 
-        private void MostrarDetallesCurso(int eventoId)
-        {
-            try
-            {
-                using (FrmDetalleCursoUser detalleForm = new FrmDetalleCursoUser(eventoId))
-                {
-                    detalleForm.ShowDialog(this);
-                }
-
-                // Recargar eventos al cerrar el formulario de detalles
-                CargarCursos();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error al mostrar detalles: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-        private void btnRefrescar_Click(object sender, EventArgs e)
-        {
-            CargarCursos();
-        }
-
         private void FrmCursosUser_Load(object sender, EventArgs e)
         {
-            // Evento opcional para carga inicial
+            // Inicializar controles adicionales si es necesario
         }
 
         private void flpCursos_Paint(object sender, PaintEventArgs e)
         {
-
+            // Mantener evento vacío si no se necesita
         }
     }
 }

@@ -60,9 +60,11 @@
     <Compile Include="ComunaService.cs" />
     <Compile Include="CursoBotController.cs" />
     <Compile Include="CursoService.cs" />
+    <Compile Include="EventoBotController.cs" />
     <Compile Include="EventoService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TelegramBotService.cs" />
+    <Compile Include="UserState.cs" />
     <Compile Include="UsuarioService.cs" />
   </ItemGroup>
   <ItemGroup>

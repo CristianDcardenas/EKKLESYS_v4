@@ -12,23 +12,23 @@ using System.Threading.Tasks;
 
 namespace BLL
 {
-    public class CursoBotController
+    public class EventoBotController
     {
         private readonly ITelegramBotClient _bot;
-        private readonly CursoService _cursoService;
+        private readonly EventoService _eventoService;
         private readonly UsuarioRepository _usuarioRepository;
-        private readonly InscripcionCursoRepository _inscripcionRepository;
+        private readonly AsistenciaEventoRepository _asistenciaRepository;
 
         // Diccionario para mantener el estado de la conversación con cada usuario
         internal Dictionary<long, UserState> _userStates;
 
-        public CursoBotController(ITelegramBotClient bot, CursoService cursoService,
-            UsuarioRepository usuarioRepository, InscripcionCursoRepository inscripcionRepository)
+        public EventoBotController(ITelegramBotClient bot, EventoService eventoService,
+            UsuarioRepository usuarioRepository, AsistenciaEventoRepository asistenciaRepository)
         {
             _bot = bot;
-            _cursoService = cursoService;
+            _eventoService = eventoService;
             _usuarioRepository = usuarioRepository;
-            _inscripcionRepository = inscripcionRepository;
+            _asistenciaRepository = asistenciaRepository;
             _userStates = new Dictionary<long, UserState>();
         }
 
@@ -46,19 +46,19 @@ namespace BLL
                 return;
             }
 
-            // Verificar si el usuario está en proceso de inscripción
+            // Verificar si el usuario está en proceso de registro de asistencia
             if (_userStates.ContainsKey(chatId) && _userStates[chatId].AwaitingPhoneNumber &&
-                _userStates[chatId].StateType == UserStateType.Curso)
+                _userStates[chatId].StateType == UserStateType.Evento)
             {
-                // El usuario está en proceso de inscripción y estamos esperando su número de teléfono
+                // El usuario está en proceso de registro y estamos esperando su número de teléfono
                 await ProcessPhoneNumberInput(chatId, text, _userStates[chatId].ItemId, ct);
                 return;
             }
 
             // Procesar comandos normales
-            if (text.ToLower() == "/cursos")
+            if (text.ToLower() == "/eventos")
             {
-                await MostrarCursos(chatId);
+                await MostrarEventos(chatId);
             }
             else if (text.ToLower() == "/start" || text.ToLower() == "/ayuda")
             {
@@ -70,21 +70,13 @@ namespace BLL
                     cancellationToken: ct
                 );
             }
-            else if (text.ToLower() != "/eventos") // Evitar manejar el comando de eventos
-            {
-                await _bot.SendTextMessageAsync(
-                    chatId,
-                    "No entiendo ese comando. Usa /ayuda para ver los comandos disponibles.",
-                    cancellationToken: ct
-                );
-            }
         }
 
-        public async Task MostrarCursos(long chatId)
+        public async Task MostrarEventos(long chatId)
         {
-            var cursos = _cursoService.ConsultarDTO();
+            var eventos = _eventoService.ConsultarProximosEventosDTO();
 
-            if (cursos.Count == 0)
+            if (eventos.Count == 0)
             {
                 // Crear botón para volver al menú principal
                 var menuButtons = new List<InlineKeyboardButton[]>();
@@ -96,32 +88,35 @@ namespace BLL
 
                 await _bot.SendTextMessageAsync(
                     chatId,
-                    "No hay cursos disponibles en este momento.",
+                    "No hay eventos próximos disponibles en este momento.",
                     replyMarkup: menuMarkup
                 );
                 return;
             }
 
-            // Crear una matriz de botones inline, con 1 curso por fila
+            // Crear una matriz de botones inline, con 1 evento por fila
             var inlineKeyboard = new List<InlineKeyboardButton[]>();
 
-            foreach (var curso in cursos)
+            foreach (var evento in eventos)
             {
+                // Agregar fecha al nombre del evento para mejor contexto
+                string eventoText = evento.nombre_evento + " - " + evento.fecha_inicio_evento.ToString("dd/MM/yyyy");
+
                 inlineKeyboard.Add(new[] {
-                    InlineKeyboardButton.WithCallbackData(curso.nombre_curso, "vercurso|" + curso.id_curso)
+                    InlineKeyboardButton.WithCallbackData(eventoText, "verevento|" + evento.id_evento)
                 });
             }
 
             // Agregar botón para volver al menú principal
             inlineKeyboard.Add(new[] {
-                InlineKeyboardButton.WithCallbackData("🔙 Volver al Menú Principal", "menu_principal")
+                InlineKeyboardButton.WithCallbackData("🏠 Menú Principal", "menu_principal")
             });
 
             var replyMarkup = new InlineKeyboardMarkup(inlineKeyboard);
 
             await _bot.SendTextMessageAsync(
                 chatId,
-                "📚 *Cursos disponibles*\n\nSelecciona un curso para ver más información:",
+                "📅 *Eventos próximos*\n\nSelecciona un evento para ver más información:",
                 parseMode: ParseMode.Markdown,
                 replyMarkup: replyMarkup
             );
@@ -134,31 +129,32 @@ namespace BLL
             var action = data[0];
             var id = data.Length > 1 ? data[1] : null;
 
-            if (action == "vercurso" && id != null)
+            if (action == "verevento" && id != null)
             {
-                int cursoId;
-                if (int.TryParse(id, out cursoId))
+                int eventoId;
+                if (int.TryParse(id, out eventoId))
                 {
-                    var curso = _cursoService.BuscarPorId(cursoId);
+                    var evento = _eventoService.BuscarPorId(eventoId);
 
-                    if (curso != null)
+                    if (evento != null)
                     {
-                        var mensaje = "📖 *" + curso.nombre_curso + "*\n" +
-                                      "📝 " + curso.descripcion_curso + "\n" +
-                                      "📅 Del " + curso.fecha_inicio_curso.ToString("dd/MM/yyyy") + " al " + curso.fecha_fin_curso.ToString("dd/MM/yyyy") + "\n" +
-                                      "👥 Cupo: " + curso.NumeroInscritos + "/" + curso.capacidad_max_curso;
+                        var mensaje = "📅 *" + evento.nombre_evento + "*\n" +
+                                      "📍 Lugar: " + evento.lugar_evento + "\n" +
+                                      "📝 " + evento.descripcion_evento + "\n" +
+                                      "⏱️ Del " + evento.fecha_inicio_evento.ToString("dd/MM/yyyy HH:mm") + " al " + evento.fecha_fin_evento.ToString("dd/MM/yyyy HH:mm") + "\n" +
+                                      "👥 Asistentes: " + evento.NumeroAsistentes + "/" + evento.capacidad_max_evento;
 
                         // Crear botones inline
                         var detailButtons = new List<InlineKeyboardButton[]>();
 
-                        // Botón de inscripción
+                        // Botón de asistencia
                         detailButtons.Add(new[] {
-                            InlineKeyboardButton.WithCallbackData("🟢 Inscribirse", "inscribirse|" + curso.id_curso)
+                            InlineKeyboardButton.WithCallbackData("🟢 Asistir", "asistir|" + evento.id_evento)
                         });
 
-                        // Botón para volver a la lista de cursos
+                        // Botón para volver a la lista de eventos
                         detailButtons.Add(new[] {
-                            InlineKeyboardButton.WithCallbackData("🔙 Volver a cursos", "volvercursos")
+                            InlineKeyboardButton.WithCallbackData("🔙 Volver a eventos", "volvereventos")
                         });
 
                         // Botón para volver al menú principal
@@ -177,55 +173,55 @@ namespace BLL
                     }
                 }
             }
-            else if (action == "volvercursos")
+            else if (action == "volvereventos")
             {
-                await MostrarCursos(chatId);
+                await MostrarEventos(chatId);
             }
-            else if (action == "inscribirse" && id != null)
+            else if (action == "asistir" && id != null)
             {
-                int cursoId;
-                if (int.TryParse(id, out cursoId))
+                int eventoId;
+                if (int.TryParse(id, out eventoId))
                 {
-                    // Iniciar proceso de inscripción solicitando número de teléfono
-                    await SolicitarNumeroTelefono(chatId, cursoId);
+                    // Iniciar proceso de registro de asistencia solicitando número de teléfono
+                    await SolicitarNumeroTelefono(chatId, eventoId);
                 }
             }
 
             await _bot.AnswerCallbackQueryAsync(query.Id);
         }
 
-        private async Task SolicitarNumeroTelefono(long chatId, int cursoId)
+        private async Task SolicitarNumeroTelefono(long chatId, int eventoId)
         {
             // Verificar si hay cupo disponible
-            var curso = _cursoService.BuscarPorId(cursoId);
-            if (curso.NumeroInscritos >= curso.capacidad_max_curso)
+            var evento = _eventoService.BuscarPorId(eventoId);
+            if (evento.NumeroAsistentes >= evento.capacidad_max_evento)
             {
                 await _bot.SendTextMessageAsync(
                     chatId,
-                    "❌ Lo sentimos, este curso ya no tiene cupos disponibles.",
+                    "❌ Lo sentimos, este evento ya no tiene cupos disponibles.",
                     parseMode: ParseMode.Markdown
                 );
                 return;
             }
 
-            // Guardar el estado del usuario (esperando número de teléfono para inscripción)
+            // Guardar el estado del usuario (esperando número de teléfono para asistencia)
             _userStates[chatId] = new UserState
             {
-                ItemId = cursoId,
+                ItemId = eventoId,
                 AwaitingPhoneNumber = true,
-                StateType = UserStateType.Curso
+                StateType = UserStateType.Evento
             };
 
             // Crear botones inline para cancelar
             var cancelButtons = new List<InlineKeyboardButton[]>();
             cancelButtons.Add(new[] {
-                InlineKeyboardButton.WithCallbackData("❌ Cancelar", "vercurso|" + cursoId)
+                InlineKeyboardButton.WithCallbackData("❌ Cancelar", "verevento|" + eventoId)
             });
 
             var cancelMarkup = new InlineKeyboardMarkup(cancelButtons);
 
             // Solicitar número de teléfono
-            var mensaje = "Para inscribirte en el curso *" + curso.nombre_curso + "*, por favor ingresa tu número de teléfono.\n\n" +
+            var mensaje = "Para registrar tu asistencia al evento *" + evento.nombre_evento + "*, por favor ingresa tu número de teléfono.\n\n" +
                           "Ejemplo: 3001234567";
 
             await _bot.SendTextMessageAsync(
@@ -236,7 +232,7 @@ namespace BLL
             );
         }
 
-        private async Task ProcessPhoneNumberInput(long chatId, string phoneNumber, int cursoId, CancellationToken ct)
+        private async Task ProcessPhoneNumberInput(long chatId, string phoneNumber, int eventoId, CancellationToken ct)
         {
             // Limpiar el estado del usuario
             _userStates.Remove(chatId);
@@ -248,10 +244,10 @@ namespace BLL
                 // Crear botones inline para volver a intentar o cancelar
                 var errorButtons = new List<InlineKeyboardButton[]>();
                 errorButtons.Add(new[] {
-                    InlineKeyboardButton.WithCallbackData("🔄 Intentar nuevamente", "inscribirse|" + cursoId)
+                    InlineKeyboardButton.WithCallbackData("🔄 Intentar nuevamente", "asistir|" + eventoId)
                 });
                 errorButtons.Add(new[] {
-                    InlineKeyboardButton.WithCallbackData("❌ Cancelar", "vercurso|" + cursoId)
+                    InlineKeyboardButton.WithCallbackData("❌ Cancelar", "verevento|" + eventoId)
                 });
 
                 var errorMarkup = new InlineKeyboardMarkup(errorButtons);
@@ -273,12 +269,12 @@ namespace BLL
             {
                 // El usuario no existe, enviar mensaje para que se registre
                 var mensajeRegistro = "⚠️ No encontramos ningún usuario registrado con el número " + phoneNumber + ".\n\n" +
-                                     "Por favor, regístrate primero en nuestra plataforma antes de inscribirte a un curso.";
+                                     "Por favor, regístrate primero en nuestra plataforma antes de asistir a un evento.";
 
                 // Crear botones inline para volver
                 var notFoundButtons = new List<InlineKeyboardButton[]>();
                 notFoundButtons.Add(new[] {
-                    InlineKeyboardButton.WithCallbackData("🔙 Volver", "vercurso|" + cursoId)
+                    InlineKeyboardButton.WithCallbackData("🔙 Volver", "verevento|" + eventoId)
                 });
 
                 var notFoundMarkup = new InlineKeyboardMarkup(notFoundButtons);
@@ -293,20 +289,20 @@ namespace BLL
                 return;
             }
 
-            // Verificar si ya está inscrito en el curso
-            if (_inscripcionRepository.ExisteInscripcion(usuario.id_usuario, cursoId))
+            // Verificar si ya está registrado en el evento
+            if (_asistenciaRepository.ExisteAsistencia(usuario.id_usuario, eventoId))
             {
                 // Crear botones inline para volver
                 var existsButtons = new List<InlineKeyboardButton[]>();
                 existsButtons.Add(new[] {
-                    InlineKeyboardButton.WithCallbackData("🔙 Volver", "vercurso|" + cursoId)
+                    InlineKeyboardButton.WithCallbackData("🔙 Volver", "verevento|" + eventoId)
                 });
 
                 var existsMarkup = new InlineKeyboardMarkup(existsButtons);
 
                 await _bot.SendTextMessageAsync(
                     chatId,
-                    "ℹ️ Ya estás inscrito en este curso con el número " + phoneNumber + ".",
+                    "ℹ️ Ya estás registrado para asistir a este evento con el número " + phoneNumber + ".",
                     parseMode: ParseMode.Markdown,
                     replyMarkup: existsMarkup,
                     cancellationToken: ct
@@ -315,20 +311,20 @@ namespace BLL
             }
 
             // Verificar si hay cupo disponible (verificación adicional por seguridad)
-            var curso = _cursoService.BuscarPorId(cursoId);
-            if (curso.NumeroInscritos >= curso.capacidad_max_curso)
+            var evento = _eventoService.BuscarPorId(eventoId);
+            if (evento.NumeroAsistentes >= evento.capacidad_max_evento)
             {
                 // Crear botones inline para volver
                 var noSpaceButtons = new List<InlineKeyboardButton[]>();
                 noSpaceButtons.Add(new[] {
-                    InlineKeyboardButton.WithCallbackData("🔙 Volver", "volvercursos")
+                    InlineKeyboardButton.WithCallbackData("🔙 Volver", "volvereventos")
                 });
 
                 var noSpaceMarkup = new InlineKeyboardMarkup(noSpaceButtons);
 
                 await _bot.SendTextMessageAsync(
                     chatId,
-                    "❌ Lo sentimos, este curso ya no tiene cupos disponibles.",
+                    "❌ Lo sentimos, este evento ya no tiene cupos disponibles.",
                     parseMode: ParseMode.Markdown,
                     replyMarkup: noSpaceMarkup,
                     cancellationToken: ct
@@ -336,20 +332,20 @@ namespace BLL
                 return;
             }
 
-            // Realizar la inscripción
-            var inscripcion = new Inscripcion_curso();
-            inscripcion.id_usuario = usuario.id_usuario;
-            inscripcion.id_curso = cursoId;
-            inscripcion.fecha_inscripcion_curso = DateTime.Now;
+            // Registrar asistencia
+            var asistencia = new Asistencia_evento();
+            asistencia.id_usuario = usuario.id_usuario;
+            asistencia.id_evento = eventoId;
+            asistencia.fecha_asistencia_evento = DateTime.Now;
 
             try
             {
-                _inscripcionRepository.Guardar(inscripcion);
+                _asistenciaRepository.Guardar(asistencia);
 
                 // Crear botones inline para volver
                 var successButtons = new List<InlineKeyboardButton[]>();
                 successButtons.Add(new[] {
-                    InlineKeyboardButton.WithCallbackData("🔙 Volver a cursos", "volvercursos")
+                    InlineKeyboardButton.WithCallbackData("🔙 Volver a eventos", "volvereventos")
                 });
                 successButtons.Add(new[] {
                     InlineKeyboardButton.WithCallbackData("🏠 Menú Principal", "menu_principal")
@@ -366,10 +362,12 @@ namespace BLL
 
                 await _bot.SendTextMessageAsync(
                     chatId,
-                    "✅ ¡Te has inscrito exitosamente al curso *" + curso.nombre_curso + "*!\n\n" +
+                    "✅ ¡Has registrado tu asistencia al evento *" + evento.nombre_evento + "* exitosamente!\n\n" +
                     "Nombre: " + nombreCompleto + "\n" +
-                    "Teléfono: " + usuario.telefono + "\n\n" +
-                    "Recibirás notificaciones sobre este curso.",
+                    "Teléfono: " + usuario.telefono + "\n" +
+                    "Fecha: " + evento.fecha_inicio_evento.ToString("dd/MM/yyyy HH:mm") + "\n" +
+                    "Lugar: " + evento.lugar_evento + "\n\n" +
+                    "Recibirás notificaciones sobre este evento.",
                     parseMode: ParseMode.Markdown,
                     replyMarkup: successMarkup,
                     cancellationToken: ct
@@ -380,24 +378,24 @@ namespace BLL
                 // Crear botones inline para volver a intentar o cancelar
                 var failButtons = new List<InlineKeyboardButton[]>();
                 failButtons.Add(new[] {
-                    InlineKeyboardButton.WithCallbackData("🔄 Intentar nuevamente", "inscribirse|" + cursoId)
+                    InlineKeyboardButton.WithCallbackData("🔄 Intentar nuevamente", "asistir|" + eventoId)
                 });
                 failButtons.Add(new[] {
-                    InlineKeyboardButton.WithCallbackData("❌ Cancelar", "volvercursos")
+                    InlineKeyboardButton.WithCallbackData("❌ Cancelar", "volvereventos")
                 });
 
                 var failMarkup = new InlineKeyboardMarkup(failButtons);
 
                 await _bot.SendTextMessageAsync(
                     chatId,
-                    "❌ Ha ocurrido un error al procesar tu inscripción. Por favor, intenta nuevamente más tarde.",
+                    "❌ Ha ocurrido un error al registrar tu asistencia. Por favor, intenta nuevamente más tarde.",
                     parseMode: ParseMode.Markdown,
                     replyMarkup: failMarkup,
                     cancellationToken: ct
                 );
 
                 // Registrar el error para depuración
-                Console.WriteLine("Error al inscribir usuario: " + ex.Message);
+                Console.WriteLine("Error al registrar asistencia: " + ex.Message);
             }
         }
 
@@ -406,7 +404,7 @@ namespace BLL
         {
             return _userStates.ContainsKey(chatId) &&
                    _userStates[chatId].AwaitingPhoneNumber &&
-                   _userStates[chatId].StateType == UserStateType.Curso;
+                   _userStates[chatId].StateType == UserStateType.Evento;
         }
     }
 }

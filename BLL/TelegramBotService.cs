@@ -15,6 +15,8 @@ namespace BLL
         private CursoBotController _controller;
         private readonly CursoService _cursoService;
         private readonly EventoService _eventoService;
+        private readonly UsuarioRepository _usuarioRepository;
+        private readonly InscripcionCursoRepository _inscripcionRepository;
         private readonly TelegramBotClient _botClient;
         private CancellationTokenSource _cts;
 
@@ -22,10 +24,16 @@ namespace BLL
         {
             // Usa tu token aquí (considera moverlo a configuración)
             _botClient = new TelegramBotClient("7829823993:AAG7rxd3rqkJV1CpBdNSJZHLYD0yfC0Bwo4");
+
+            // Inicializar servicios y repositorios
+            var connectionManager = new ConnectionManager();
             _cursoService = new CursoService();
             _eventoService = new EventoService();
-            _controller = new CursoBotController(_botClient, _cursoService);
+            _usuarioRepository = new UsuarioRepository(connectionManager);
+            _inscripcionRepository = new InscripcionCursoRepository(connectionManager, _usuarioRepository);
 
+            // Inicializar el controlador con todas las dependencias
+            _controller = new CursoBotController(_botClient, _cursoService, _usuarioRepository, _inscripcionRepository);
         }
 
         public async Task StartBotAsync()
@@ -47,7 +55,7 @@ namespace BLL
 
             // Obtiene información del bot
             var me = await _botClient.GetMeAsync();
-            Console.WriteLine($"Bot iniciado: @{me.Username}");
+            Console.WriteLine("Bot iniciado: @" + me.Username);
         }
 
         public async Task StopBotAsync()
@@ -71,15 +79,14 @@ namespace BLL
             }
         }
 
-
-
         private Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
         {
             string errorMessage;
 
-            if (exception is ApiRequestException apiRequestException)
+            if (exception is ApiRequestException)
             {
-                errorMessage = $"Error de la API de Telegram:\n[{apiRequestException.ErrorCode}]\n{apiRequestException.Message}";
+                ApiRequestException apiRequestException = (ApiRequestException)exception;
+                errorMessage = "Error de la API de Telegram:\n[" + apiRequestException.ErrorCode + "]\n" + apiRequestException.Message;
             }
             else
             {

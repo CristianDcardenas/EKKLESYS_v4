@@ -91,8 +91,6 @@ namespace DAL
             }
 
         }
-
-
         public void Modificar(Usuario usuario)
         {
             using (var connection = connectionManager.GetConnection())
@@ -490,6 +488,24 @@ namespace DAL
                     throw;
                 }
             }
+        }
+        public Usuario BuscarPorTelefono(string telefono)
+        {
+            using (var conn = connectionManager.GetConnection())
+            {
+                conn.Open();
+                var cmd = new OracleCommand("SELECT * FROM usuarios WHERE TELEFONO = :telefono", conn);
+                cmd.Parameters.Add(new OracleParameter("telefono", OracleDbType.Varchar2)).Value = telefono;
+
+                using (var reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        return MapToUsuario(reader);
+                    }
+                }
+            }
+            return null;
         }
     }
 }

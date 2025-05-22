@@ -397,8 +397,6 @@ namespace GUI
             return bmp;
         }
 
-        
-
         private void CargarEventos()
         {
             eventos = eventoService.ConsultarDTO();
@@ -659,7 +657,6 @@ namespace GUI
         }
         // Método para mostrar detalles del evento (evita problemas de "disposed object")
 
-
         private void BtnVerDetalles_Click(object sender, EventArgs e)
         {
             var btn = sender as Button;
@@ -781,6 +778,19 @@ namespace GUI
 
         private void FrmInicio2_Load(object sender, EventArgs e)
         {
+
+        }
+        private async void FrmInicio2_LoadAsync(object sender, EventArgs e)
+        {
+            try
+            {
+                await _botService.StartBotAsync();
+                MessageBox.Show("Bot de Telegram iniciado correctamente");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al iniciar el bot: {ex.Message}");
+            }
 
         }
     }

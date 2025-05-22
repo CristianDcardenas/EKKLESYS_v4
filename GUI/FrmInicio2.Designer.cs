@@ -765,7 +765,7 @@ namespace GUI
             this.Name = "FrmInicio2";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Sistema de Gestión de Iglesia - EKKLESYS";
-            this.Load += new System.EventHandler(this.FrmInicio2_Load);
+            this.Load += new System.EventHandler(this.FrmInicio2_LoadAsync);
             this.panelHeader.ResumeLayout(false);
             this.panelHeader.PerformLayout();
             this.panelNavigation.ResumeLayout(false);

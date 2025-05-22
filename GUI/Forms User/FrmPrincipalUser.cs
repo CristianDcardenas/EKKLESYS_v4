@@ -192,5 +192,10 @@ namespace GUI
         {
 
         }
+
+        private void pnContenedor_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
     }
 }

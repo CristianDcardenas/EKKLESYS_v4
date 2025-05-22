@@ -167,10 +167,10 @@
     <Compile Include="Forms User\FrmPrincipalUser.Designer.cs">
       <DependentUpon>FrmPrincipalUser.cs</DependentUpon>
     </Compile>
-    <Compile Include="FrmUsuarios.cs">
+    <Compile Include="Forms Admin\FrmUsuarios.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FrmUsuarios.Designer.cs">
+    <Compile Include="Forms Admin\FrmUsuarios.Designer.cs">
       <DependentUpon>FrmUsuarios.cs</DependentUpon>
     </Compile>
     <Compile Include="PerfilForm.cs">
@@ -227,7 +227,7 @@
     <EmbeddedResource Include="Forms User\FrmPrincipalUser.resx">
       <DependentUpon>FrmPrincipalUser.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FrmUsuarios.resx">
+    <EmbeddedResource Include="Forms Admin\FrmUsuarios.resx">
       <DependentUpon>FrmUsuarios.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PerfilForm.resx">
@@ -271,6 +271,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\logo_ekklesys_redondo.png" />
     <None Include="Resources\Captura de pantalla 2025-05-21 162820.png" />
     <None Include="Resources\lakewood.jpg" />
     <None Include="Resources\ChatGPT Image 19 may 2025, 12_45_17.png" />

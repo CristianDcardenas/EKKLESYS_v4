@@ -83,5 +83,10 @@ namespace GUI
         {
             this.Close();
         }
+
+        private void txtConfirmarPassword_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

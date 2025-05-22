@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using BLL;
 using ENTITY;
@@ -13,6 +14,7 @@ namespace GUI
     {
         private readonly EventoService eventoService;
         private List<EventoDTO> eventos;
+        private List<EventoDTO> eventosFiltrados;
 
         public FrmEventosAdmin()
         {
@@ -21,28 +23,37 @@ namespace GUI
             CargarEventos();
         }
 
-
         private void CargarEventos()
         {
             eventos = eventoService.ConsultarDTO();
+            eventosFiltrados = null;
+            txtSearch.Text = "Buscar evento...";
+            MostrarEventos(eventos);
+            label1.Text = $"Eventos Disponibles ({eventos.Count})";
+        }
+
+        private void MostrarEventos(List<EventoDTO> eventosAMostrar)
+        {
             flpEventos.Controls.Clear();
 
-            foreach (var evento in eventos)
+            if (eventosAMostrar == null || eventosAMostrar.Count == 0)
             {
-                // Panel principal con esquinas redondeadas y sombra
+                MostrarMensajeNoHayEventos();
+                return;
+            }
+
+            foreach (var evento in eventosAMostrar)
+            {
                 Panel panel = new Panel
                 {
                     Width = 320,
-                    Height = 400, // Un poco más alto para acomodar el campo de lugar
+                    Height = 400,
                     Margin = new Padding(15),
                     BackColor = Color.White
                 };
-
-                // Aplicar efecto de sombra y bordes redondeados
                 ApplyRoundedCorners(panel, 10);
                 ApplyShadowEffect(panel);
 
-                // Contenedor para la imagen con altura fija
                 Panel imageContainer = new Panel
                 {
                     Width = 320,
@@ -51,26 +62,20 @@ namespace GUI
                     BackColor = Color.FromArgb(240, 240, 240)
                 };
 
-                // PictureBox para la imagen con mejor adaptación
                 PictureBox pictureBox = new PictureBox
                 {
                     Width = 320,
                     Height = 180,
                     Dock = DockStyle.Fill,
-                    SizeMode = PictureBoxSizeMode.Zoom, // Mejor adaptación de la imagen
+                    SizeMode = PictureBoxSizeMode.Zoom,
                     BackColor = Color.Transparent
                 };
 
-                // Cargar la imagen si existe
                 if (!string.IsNullOrEmpty(evento.ruta_imagen_evento) && File.Exists(evento.ruta_imagen_evento))
                 {
                     try
                     {
-                        // Usar una copia de la imagen para evitar problemas de "disposed object"
-                        using (var originalImage = Image.FromFile(evento.ruta_imagen_evento))
-                        {
-                            pictureBox.Image = new Bitmap(originalImage);
-                        }
+                        pictureBox.Image = Image.FromFile(evento.ruta_imagen_evento);
                     }
                     catch (Exception ex)
                     {
@@ -86,29 +91,26 @@ namespace GUI
                 imageContainer.Controls.Add(pictureBox);
                 panel.Controls.Add(imageContainer);
 
-                // Panel para el contenido
                 Panel contentPanel = new Panel
                 {
                     Width = 320,
-                    Height = 220, // Más alto para acomodar el campo de lugar
+                    Height = 220,
                     Location = new Point(0, 180),
                     BackColor = Color.White,
                     Padding = new Padding(15)
                 };
 
-                // Título del evento con estilo moderno
                 Label lblNombre = new Label
                 {
                     Text = evento.nombre_evento,
-                    Font = new Font("Segoe UI Semibold", 14),
+                    Font = new Font("Segoe UI", 14, FontStyle.Bold),
                     ForeColor = Color.FromArgb(50, 50, 50),
                     Width = 290,
                     Height = 30,
                     Location = new Point(15, 10),
-                    AutoEllipsis = true // Añade "..." si el texto es demasiado largo
+                    AutoEllipsis = true
                 };
 
-                // Panel para lugar con icono
                 Panel lugarPanel = new Panel
                 {
                     Width = 290,
@@ -127,7 +129,7 @@ namespace GUI
 
                 Label lblLugar = new Label
                 {
-                    Text = $"{evento.lugar_evento}",
+                    Text = evento.lugar_evento,
                     Font = new Font("Segoe UI", 9),
                     ForeColor = Color.FromArgb(100, 100, 100),
                     Width = 270,
@@ -138,7 +140,6 @@ namespace GUI
                 lugarPanel.Controls.Add(locationIcon);
                 lugarPanel.Controls.Add(lblLugar);
 
-                // Fechas con icono
                 Panel fechasPanel = new Panel
                 {
                     Width = 290,
@@ -168,7 +169,6 @@ namespace GUI
                 fechasPanel.Controls.Add(calendarIcon);
                 fechasPanel.Controls.Add(lblFechas);
 
-                // Panel para asistentes con icono
                 Panel asistentesPanel = new Panel
                 {
                     Width = 290,
@@ -198,25 +198,22 @@ namespace GUI
                 asistentesPanel.Controls.Add(userIcon);
                 asistentesPanel.Controls.Add(lblAsistentes);
 
-                // Barra de progreso moderna
                 Panel progressContainer = new Panel
                 {
                     Width = 290,
                     Height = 6,
                     Location = new Point(15, 135),
-                    BackColor = Color.FromArgb(230, 230, 230),
-                    Padding = new Padding(0)
+                    BackColor = Color.FromArgb(230, 230, 230)
                 };
                 ApplyRoundedCorners(progressContainer, 3);
 
-                // Calcular el ancho de la barra de progreso
                 int progressWidth = evento.capacidad_max_evento > 0
                     ? (int)((double)evento.NumeroAsistentes / evento.capacidad_max_evento * 290)
                     : 0;
 
                 Panel progressBar = new Panel
                 {
-                    Width = Math.Max(progressWidth, 5), // Al menos 5px de ancho
+                    Width = Math.Max(progressWidth, 5),
                     Height = 6,
                     Location = new Point(0, 0),
                     BackColor = GetProgressColor(evento.NumeroAsistentes, evento.capacidad_max_evento)
@@ -225,7 +222,6 @@ namespace GUI
 
                 progressContainer.Controls.Add(progressBar);
 
-                // Botón moderno para ver detalles
                 Button btnVerDetalles = new Button
                 {
                     Text = "Ver detalles",
@@ -234,21 +230,17 @@ namespace GUI
                     Location = new Point(15, 160),
                     Tag = evento.id_evento,
                     FlatStyle = FlatStyle.Flat,
-                    BackColor = Color.FromArgb(240, 240, 240),
-                    ForeColor = Color.FromArgb(60, 60, 60),
+                    BackColor = Color.FromArgb(52, 73, 94),
+                    ForeColor = Color.White,
                     Font = new Font("Segoe UI", 10, FontStyle.Regular),
                     Cursor = Cursors.Hand
                 };
                 btnVerDetalles.FlatAppearance.BorderSize = 0;
                 ApplyRoundedCorners(btnVerDetalles, 5);
 
-                // Usar una variable local para el evento Click para evitar problemas de "disposed object"
                 int eventoId = evento.id_evento;
-                btnVerDetalles.Click += (sender, e) => {
-                    MostrarDetallesEvento(eventoId);
-                };
+                btnVerDetalles.Click += (sender, e) => MostrarDetallesEvento(eventoId);
 
-                // Agregar controles al panel de contenido
                 contentPanel.Controls.Add(lblNombre);
                 contentPanel.Controls.Add(lugarPanel);
                 contentPanel.Controls.Add(fechasPanel);
@@ -256,15 +248,36 @@ namespace GUI
                 contentPanel.Controls.Add(progressContainer);
                 contentPanel.Controls.Add(btnVerDetalles);
 
-                // Agregar el panel de contenido al panel principal
                 panel.Controls.Add(contentPanel);
-
-                // Agregar panel al FlowLayoutPanel
                 flpEventos.Controls.Add(panel);
             }
         }
 
-        // Método para mostrar detalles del evento (evita problemas de "disposed object")
+        private void MostrarMensajeNoHayEventos()
+        {
+            Panel panelNoResults = new Panel
+            {
+                Width = flpEventos.Width - 100,
+                Height = 150,
+                BackColor = Color.White,
+                Margin = new Padding(50, 100, 50, 0)
+            };
+
+            Label lblNoHayEventos = new Label
+            {
+                Text = "No se encontraron eventos con los criterios seleccionados",
+                Font = new Font("Segoe UI", 14, FontStyle.Regular),
+                AutoSize = false,
+                TextAlign = ContentAlignment.MiddleCenter,
+                Width = panelNoResults.Width - 40,
+                Height = 40,
+                Location = new Point(20, 55)
+            };
+
+            panelNoResults.Controls.Add(lblNoHayEventos);
+            flpEventos.Controls.Add(panelNoResults);
+        }
+
         private void MostrarDetallesEvento(int eventoId)
         {
             try
@@ -273,8 +286,6 @@ namespace GUI
                 {
                     detalleForm.ShowDialog(this);
                 }
-
-                // Recargar eventos al cerrar el formulario de detalles
                 CargarEventos();
             }
             catch (Exception ex)
@@ -283,195 +294,6 @@ namespace GUI
             }
         }
 
-        // Método para crear un icono de ubicación simple
-        private Bitmap CreateLocationIcon()
-        {
-            Bitmap bmp = new Bitmap(16, 16);
-            using (Graphics g = Graphics.FromImage(bmp))
-            {
-                g.Clear(Color.Transparent);
-                using (Pen pen = new Pen(Color.FromArgb(100, 100, 100), 1))
-                {
-                    // Dibujar un marcador de ubicación
-                    g.DrawEllipse(pen, 5, 2, 6, 6);
-                    Point[] points = {
-                new Point(8, 8),
-                new Point(8, 14)
-            };
-                    g.DrawLines(pen, points);
-                }
-            }
-            return bmp;
-        }
-
-        // Método para aplicar esquinas redondeadas a un control
-        private void ApplyRoundedCorners(Control control, int radius)
-        {
-            using (GraphicsPath path = new GraphicsPath())
-            {
-                path.AddArc(0, 0, radius * 2, radius * 2, 180, 90);
-                path.AddArc(control.Width - radius * 2, 0, radius * 2, radius * 2, 270, 90);
-                path.AddArc(control.Width - radius * 2, control.Height - radius * 2, radius * 2, radius * 2, 0, 90);
-                path.AddArc(0, control.Height - radius * 2, radius * 2, radius * 2, 90, 90);
-                path.CloseAllFigures();
-
-                control.Region = new Region(path);
-            }
-        }
-
-        // Método para aplicar efecto de sombra a un panel
-        private void ApplyShadowEffect(Panel panel)
-        {
-            panel.Paint += (sender, e) =>
-            {
-                // Dibujar sombra sutil
-                Rectangle shadowRect = new Rectangle(0, 0, panel.Width, panel.Height);
-                using (LinearGradientBrush brush = new LinearGradientBrush(
-                    shadowRect,
-                    Color.FromArgb(10, 0, 0, 0),
-                    Color.FromArgb(30, 0, 0, 0),
-                    LinearGradientMode.Vertical))
-                {
-                    e.Graphics.FillRectangle(brush, shadowRect);
-                }
-            };
-        }
-
-        // Método para crear una imagen por defecto moderna
-        private void CrearImagenPorDefectoModerna(PictureBox pictureBox)
-        {
-            Bitmap bmp = new Bitmap(pictureBox.Width, pictureBox.Height);
-            using (Graphics g = Graphics.FromImage(bmp))
-            {
-                // Fondo degradado
-                using (LinearGradientBrush brush = new LinearGradientBrush(
-                    new Rectangle(0, 0, pictureBox.Width, pictureBox.Height),
-                    Color.FromArgb(240, 240, 240),
-                    Color.FromArgb(220, 220, 220),
-                    LinearGradientMode.Vertical))
-                {
-                    g.FillRectangle(brush, 0, 0, pictureBox.Width, pictureBox.Height);
-                }
-
-                // Icono de imagen
-                using (Pen pen = new Pen(Color.FromArgb(180, 180, 180), 2))
-                {
-                    // Dibujar un marco de imagen
-                    int margin = pictureBox.Width / 4;
-                    g.DrawRectangle(pen, margin, margin, pictureBox.Width - margin * 2, pictureBox.Height - margin * 2);
-
-                    // Dibujar una montaña simple
-                    Point[] points = {
-                new Point(margin, pictureBox.Height - margin),
-                new Point(pictureBox.Width / 2, margin + pictureBox.Height / 4),
-                new Point(pictureBox.Width - margin, pictureBox.Height - margin)
-            };
-                    g.DrawLines(pen, points);
-
-                    // Dibujar un sol
-                    g.DrawEllipse(pen, pictureBox.Width - margin - 20, margin + 10, 15, 15);
-                }
-
-                // Texto
-                using (Font font = new Font("Segoe UI", 9, FontStyle.Regular))
-                using (StringFormat sf = new StringFormat())
-                {
-                    sf.Alignment = StringAlignment.Center;
-                    sf.LineAlignment = StringAlignment.Center;
-                    g.DrawString("Sin imagen", font, Brushes.Gray,
-                        new Rectangle(0, pictureBox.Height - 30, pictureBox.Width, 20), sf);
-                }
-            }
-            pictureBox.Image = bmp;
-        }
-
-        // Método para obtener el color de la barra de progreso según el porcentaje de ocupación
-        private Color GetProgressColor(int asistentes, int capacidadMax)
-        {
-            if (capacidadMax <= 0) return Color.FromArgb(100, 200, 100); // Verde por defecto
-
-            double porcentaje = (double)asistentes / capacidadMax;
-
-            if (porcentaje < 0.5)
-                return Color.FromArgb(100, 200, 100); // Verde
-            else if (porcentaje < 0.8)
-                return Color.FromArgb(255, 180, 0);   // Amarillo/Naranja
-            else
-                return Color.FromArgb(220, 80, 80);   // Rojo
-        }
-
-        // Método para crear un icono de calendario simple
-        private Bitmap CreateCalendarIcon()
-        {
-            Bitmap bmp = new Bitmap(16, 16);
-            using (Graphics g = Graphics.FromImage(bmp))
-            {
-                g.Clear(Color.Transparent);
-                using (Pen pen = new Pen(Color.FromArgb(100, 100, 100), 1))
-                {
-                    // Dibujar un calendario
-                    g.DrawRectangle(pen, 2, 3, 12, 11);
-                    g.DrawLine(pen, 5, 3, 5, 1);
-                    g.DrawLine(pen, 11, 3, 11, 1);
-
-                    // Líneas horizontales para representar líneas de texto
-                    g.DrawLine(pen, 4, 7, 12, 7);
-                    g.DrawLine(pen, 4, 10, 12, 10);
-                }
-            }
-            return bmp;
-        }
-
-        // Método para crear un icono de usuario simple
-        private Bitmap CreateUserIcon()
-        {
-            Bitmap bmp = new Bitmap(16, 16);
-            using (Graphics g = Graphics.FromImage(bmp))
-            {
-                g.Clear(Color.Transparent);
-                using (Pen pen = new Pen(Color.FromArgb(100, 100, 100), 1))
-                {
-                    // Dibujar cabeza
-                    g.DrawEllipse(pen, 5, 2, 6, 6);
-
-                    // Dibujar cuerpo
-                    g.DrawLine(pen, 8, 8, 8, 12);
-
-                    // Dibujar brazos
-                    g.DrawLine(pen, 4, 10, 12, 10);
-                }
-            }
-            return bmp;
-        }
-        private void CrearImagenPorDefecto(PictureBox pictureBox)
-        {
-            pictureBox.Image = new Bitmap(pictureBox.Width, pictureBox.Height);
-            using (Graphics g = Graphics.FromImage(pictureBox.Image))
-            {
-                g.Clear(Color.LightGray);
-                using (Font font = new Font("Arial", 10))
-                using (StringFormat sf = new StringFormat())
-                {
-                    sf.Alignment = StringAlignment.Center;
-                    sf.LineAlignment = StringAlignment.Center;
-                    g.DrawString("Sin imagen", font, Brushes.Gray, new Rectangle(0, 0, pictureBox.Width, pictureBox.Height), sf);
-                }
-            }
-        }
-
-        private void BtnVerDetalles_Click(object sender, EventArgs e)
-        {
-            Button btn = (Button)sender;
-            int eventoId = (int)btn.Tag;
-
-            FrmDetalleEventoAdmin detalleForm = new FrmDetalleEventoAdmin(eventoId);
-            detalleForm.ShowDialog();
-
-            // Recargar eventos al cerrar el formulario de detalles
-            CargarEventos();
-        }
-
-       
         private void btnNuevoEvento_Click(object sender, EventArgs e)
         {
             FrmCrearEvento crearForm = new FrmCrearEvento();
@@ -486,10 +308,179 @@ namespace GUI
             CargarEventos();
         }
 
+        private void btnSearch_Click(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(txtSearch.Text) && txtSearch.Text != "Buscar evento...")
+            {
+                eventos = eventoService.ConsultarDTO();
+                string busqueda = txtSearch.Text.ToLower();
+                eventosFiltrados = eventos.Where(evento => evento.nombre_evento.ToLower().Contains(busqueda)).ToList();
+                MostrarEventos(eventosFiltrados);
+                label1.Text = $"Resultados de búsqueda ({eventosFiltrados.Count})";
+            }
+            else
+            {
+                CargarEventos();
+            }
+        }
+
+        private void txtSearch_Enter(object sender, EventArgs e)
+        {
+            if (txtSearch.Text == "Buscar evento...")
+            {
+                txtSearch.Text = "";
+            }
+        }
+
+        private void txtSearch_Leave(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtSearch.Text))
+            {
+                txtSearch.Text = "Buscar evento...";
+            }
+        }
+
+        private void txtSearch_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.SuppressKeyPress = true;
+                btnSearch_Click(sender, e);
+            }
+        }
+
+        private void CrearImagenPorDefectoModerna(PictureBox pictureBox)
+        {
+            Bitmap bmp = new Bitmap(pictureBox.Width, pictureBox.Height);
+            using (Graphics g = Graphics.FromImage(bmp))
+            {
+                using (LinearGradientBrush brush = new LinearGradientBrush(
+                    new Rectangle(0, 0, pictureBox.Width, pictureBox.Height),
+                    Color.FromArgb(240, 240, 240),
+                    Color.FromArgb(220, 220, 220),
+                    LinearGradientMode.Vertical))
+                {
+                    g.FillRectangle(brush, 0, 0, pictureBox.Width, pictureBox.Height);
+                }
+
+                int iconSize = 48;
+                int iconX = (pictureBox.Width - iconSize) / 2;
+                int iconY = (pictureBox.Height - iconSize) / 2 - 10;
+
+                using (Pen pen = new Pen(Color.FromArgb(180, 180, 180), 2))
+                {
+                    g.DrawRectangle(pen, iconX, iconY, iconSize, iconSize);
+                    Point[] trianglePoints = {
+                        new Point(iconX + 10, iconY + iconSize - 10),
+                        new Point(iconX + iconSize/2 - 5, iconY + iconSize/2),
+                        new Point(iconX + iconSize/2 + 15, iconY + iconSize - 10)
+                    };
+                    g.DrawLines(pen, trianglePoints);
+                    g.DrawEllipse(pen, iconX + iconSize - 20, iconY + 10, 10, 10);
+                }
+
+                using (Font font = new Font("Segoe UI", 11, FontStyle.Regular))
+                using (StringFormat sf = new StringFormat())
+                {
+                    sf.Alignment = StringAlignment.Center;
+                    sf.LineAlignment = StringAlignment.Center;
+                    RectangleF textRect = new RectangleF(0, iconY + iconSize + 10, pictureBox.Width, 30);
+                    g.DrawString("Sin imagen", font, Brushes.Gray, textRect, sf);
+                }
+            }
+            pictureBox.Image = bmp;
+        }
+
+        private void ApplyRoundedCorners(Control control, int radius)
+        {
+            using (GraphicsPath path = new GraphicsPath())
+            {
+                path.AddArc(0, 0, radius * 2, radius * 2, 180, 90);
+                path.AddArc(control.Width - radius * 2, 0, radius * 2, radius * 2, 270, 90);
+                path.AddArc(control.Width - radius * 2, control.Height - radius * 2, radius * 2, radius * 2, 0, 90);
+                path.AddArc(0, control.Height - radius * 2, radius * 2, radius * 2, 90, 90);
+                path.CloseAllFigures();
+                control.Region = new Region(path);
+            }
+        }
+
+        private void ApplyShadowEffect(Panel panel)
+        {
+            panel.Paint += (sender, e) =>
+            {
+                using (Pen pen = new Pen(Color.FromArgb(20, 0, 0, 0), 1))
+                {
+                    e.Graphics.DrawRectangle(pen, 0, 0, panel.Width - 1, panel.Height - 1);
+                }
+            };
+        }
+
+        private Color GetProgressColor(int asistentes, int capacidad)
+        {
+            if (capacidad == 0) return Color.FromArgb(76, 175, 80);
+            double porcentaje = (double)asistentes / capacidad;
+            if (porcentaje < 0.5)
+                return Color.FromArgb(76, 175, 80); // Verde
+            else if (porcentaje < 0.75)
+                return Color.FromArgb(255, 152, 0); // Naranja
+            else
+                return Color.FromArgb(244, 67, 54); // Rojo
+        }
+
+        private Bitmap CreateLocationIcon()
+        {
+            Bitmap bmp = new Bitmap(16, 16);
+            using (Graphics g = Graphics.FromImage(bmp))
+            {
+                g.Clear(Color.Transparent);
+                using (Pen pen = new Pen(Color.FromArgb(100, 100, 100), 1))
+                {
+                    g.DrawEllipse(pen, 5, 2, 6, 6);
+                    Point[] points = {
+                        new Point(8, 8),
+                        new Point(8, 14)
+                    };
+                    g.DrawLines(pen, points);
+                }
+            }
+            return bmp;
+        }
+
+        private Bitmap CreateCalendarIcon()
+        {
+            Bitmap bmp = new Bitmap(16, 16);
+            using (Graphics g = Graphics.FromImage(bmp))
+            {
+                g.Clear(Color.Transparent);
+                using (Pen pen = new Pen(Color.FromArgb(100, 100, 100), 1))
+                {
+                    g.DrawRectangle(pen, 1, 3, 13, 12);
+                    g.DrawLine(pen, 1, 7, 14, 7);
+                    g.DrawLine(pen, 4, 1, 4, 3);
+                    g.DrawLine(pen, 11, 1, 11, 3);
+                }
+            }
+            return bmp;
+        }
+
+        private Bitmap CreateUserIcon()
+        {
+            Bitmap bmp = new Bitmap(16, 16);
+            using (Graphics g = Graphics.FromImage(bmp))
+            {
+                g.Clear(Color.Transparent);
+                using (Pen pen = new Pen(Color.FromArgb(100, 100, 100), 1))
+                {
+                    g.DrawEllipse(pen, 5, 1, 6, 6);
+                    g.DrawArc(pen, 2, 7, 12, 12, 180, 180);
+                }
+            }
+            return bmp;
+        }
 
         private void EventosForm_Load(object sender, EventArgs e)
         {
-            // Puedes agregar código de inicialización adicional aquí si es necesario
+            // Inicializar controles adicionales si es necesario
         }
     }
 }

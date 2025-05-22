@@ -15,6 +15,7 @@ namespace GUI
         private List<CursoDTO> cursos;
         private readonly EventoService eventoService;
         private List<EventoDTO> eventos;
+        private readonly TelegramBotService _botService;
 
         public FrmInicio2()
         {
@@ -25,7 +26,13 @@ namespace GUI
             this.WindowState = FormWindowState.Maximized;
             cursoService = new CursoService();
             eventoService = new EventoService();
-            
+            _botService = new TelegramBotService();
+
+        }
+
+        private async void FrmInicio2Closing(object sender, FormClosingEventArgs e)
+        {
+            await _botService.StopBotAsync();
         }
 
         private void ConfigureTabControl()

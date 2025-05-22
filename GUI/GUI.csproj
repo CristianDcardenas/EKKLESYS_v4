@@ -194,6 +194,9 @@
     <EmbeddedResource Include="Forms Admin\FrmCrearEvento.resx">
       <DependentUpon>FrmCrearEvento.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms Admin\FrmCursosAdmin.resx">
+      <DependentUpon>FrmCursosAdmin.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms Admin\FrmDetalleCursoAdmin.resx">
       <DependentUpon>FrmDetalleCursoAdmin.cs</DependentUpon>
     </EmbeddedResource>

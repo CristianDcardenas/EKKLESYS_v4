@@ -275,6 +275,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\logo_ekklesys_redondo.png" />
+    <None Include="Resources\ojo1.png" />
+    <None Include="Resources\ojo.png" />
     <None Include="Resources\Captura de pantalla 2025-05-21 162820.png" />
     <None Include="Resources\lakewood.jpg" />
     <None Include="Resources\ChatGPT Image 19 may 2025, 12_45_17.png" />

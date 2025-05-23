@@ -25,7 +25,7 @@
             this.NombreCompleto = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Email = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Telefono = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.btnCerrar = new System.Windows.Forms.Button();
+            this.btnCerrar = new FontAwesome.Sharp.IconButton(); // Changed to IconButton
             ((System.ComponentModel.ISupportInitialize)(this.dgvAsistentes)).BeginInit();
             this.panelHeader.SuspendLayout();
             this.SuspendLayout();
@@ -123,11 +123,15 @@
             // 
             // btnCerrar
             // 
-            this.btnCerrar.BackColor = System.Drawing.Color.FromArgb(0, 122, 204); // Blue button
+            this.btnCerrar.BackColor = System.Drawing.Color.FromArgb(192, 0, 0); // Red button to match FrmInscritosCurso
             this.btnCerrar.FlatAppearance.BorderSize = 0; // Flat style
             this.btnCerrar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCerrar.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular);
             this.btnCerrar.ForeColor = System.Drawing.Color.White;
+            this.btnCerrar.IconChar = FontAwesome.Sharp.IconChar.TimesCircle; // Close icon
+            this.btnCerrar.IconColor = System.Drawing.Color.White;
+            this.btnCerrar.IconSize = 24;
+            this.btnCerrar.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnCerrar.Location = new System.Drawing.Point(470, 410);
             this.btnCerrar.Name = "btnCerrar";
             this.btnCerrar.Size = new System.Drawing.Size(110, 30);
@@ -135,9 +139,9 @@
             this.btnCerrar.Text = "Cerrar";
             this.btnCerrar.UseVisualStyleBackColor = false;
             this.btnCerrar.Click += new System.EventHandler(this.btnCerrar_Click);
-            //// Optional: Add hover effect (requires additional event handlers)
-            //this.btnCerrar.MouseEnter += (s, e) => { this.btnCerrar.BackColor = System.Drawing.Color.FromArgb(30, 144, 255); };
-            //this.btnCerrar.MouseLeave += (s, e) => { this.btnCerrar.BackColor = System.Drawing.Color.FromArgb(0, 122, 204); };
+            // Hover effect
+            //this.btnCerrar.MouseEnter += (s, e) => { this.btnCerrar.BackColor = System.Drawing.Color.FromArgb(220, 20, 60); };
+            //this.btnCerrar.MouseLeave += (s, e) => { this.btnCerrar.BackColor = System.Drawing.Color.FromArgb(192, 0, 0); };
 
             // 
             // FrmAsistentesEvento
@@ -171,6 +175,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn NombreCompleto;
         private System.Windows.Forms.DataGridViewTextBoxColumn Email;
         private System.Windows.Forms.DataGridViewTextBoxColumn Telefono;
-        private System.Windows.Forms.Button btnCerrar;
+        private FontAwesome.Sharp.IconButton btnCerrar; // Changed to IconButton
     }
 }

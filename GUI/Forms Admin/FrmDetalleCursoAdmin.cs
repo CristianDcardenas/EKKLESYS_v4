@@ -14,23 +14,26 @@ namespace GUI
         private readonly int _cursoId;
         private Curso _curso;
         private CursoDTO _cursoDto;
+        private bool _isProcessing = false;
 
         public FrmDetalleCursoAdmin(int cursoId)
         {
             InitializeComponent();
             _cursoService = new CursoService();
             _cursoId = cursoId;
+            ConfigurarBotonEliminar(); // Configure button styling
+            // Ensure single event subscription
+            btnEliminarCurso.Click -= btnEliminarCurso_Click; // Remove any existing handler
+            btnEliminarCurso.Click += btnEliminarCurso_Click; // Add handler
+            Console.WriteLine("btnEliminarCurso.Click handler subscribed");
             CargarCurso();
-            ConfigurarBotonEliminar();
         }
 
         private void CargarCurso()
         {
             try
             {
-
                 _curso = _cursoService.BuscarPorId(_cursoId);
-
                 if (_curso == null)
                 {
                     MessageBox.Show("El curso no existe", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -38,11 +41,11 @@ namespace GUI
                     return;
                 }
 
+                // Load image if available
                 if (!string.IsNullOrEmpty(_curso.ruta_imagen_curso) && File.Exists(_curso.ruta_imagen_curso))
                 {
                     try
                     {
-                        // Usar una copia de la imagen para evitar problemas de "disposed object"
                         using (var originalImage = Image.FromFile(_curso.ruta_imagen_curso))
                         {
                             pictureBox.Image = new Bitmap(originalImage);
@@ -52,29 +55,22 @@ namespace GUI
                     catch (Exception ex)
                     {
                         Console.WriteLine($"Error al cargar la imagen: {ex.Message}");
-                        // No mostramos ninguna imagen si hay error
                     }
-                    _curso = _cursoService.BuscarPorId(_cursoId);
-
-                    if (_curso == null)
-                    {
-                        MessageBox.Show("El curso no existe", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        this.Close();
-                        return;
-                    }
-
-                    var cursosDto = _cursoService.ConsultarDTO();
-                    _cursoDto = cursosDto.Find(c => c.id_curso == _cursoId);
-
-                    // Cargar datos en los controles
-                    lblTitulo.Text = _curso.nombre_curso;
-                    lblFechas.Text = $"Del {_curso.fecha_inicio_curso:dd/MM/yyyy} al {_curso.fecha_fin_curso:dd/MM/yyyy}";
-                    txtDescripcion.Text = _curso.descripcion_curso;
-                    lblInscritos.Text = $"Inscritos: {_cursoDto?.NumeroInscritos ?? 0}/{_curso.capacidad_max_curso}";
-
-                    // Configurar visibilidad de botones según rol
-                    ConfigurarVisibilidadBotones();
                 }
+
+                // Load DTO data
+                var cursosDto = _cursoService.ConsultarDTO();
+                _cursoDto = cursosDto.Find(c => c.id_curso == _cursoId);
+
+                // Update UI controls
+                lblTitulo.Text = _curso.nombre_curso;
+                lblFechas.Text = $"Del {_curso.fecha_inicio_curso:dd/MM/yyyy} al {_curso.fecha_fin_curso:dd/MM/yyyy}";
+                txtDescripcion.Text = _curso.descripcion_curso;
+                lblInscritos.Text = $"Inscritos: {_cursoDto?.NumeroInscritos ?? 0}/{_curso.capacidad_max_curso}";
+
+                // Configure button visibility and log state
+                ConfigurarVisibilidadBotones();
+                Console.WriteLine($"btnEliminarCurso.Visible: {btnEliminarCurso.Visible}, Enabled: {btnEliminarCurso.Enabled}");
             }
             catch (Exception ex)
             {
@@ -86,8 +82,10 @@ namespace GUI
 
         private void ConfigurarVisibilidadBotones()
         {
-            // Mostrar botón de eliminar solo para administradores
-            btnEliminarCurso.Visible = Session.CurrentUser?.es_administrador == "S";
+            bool isAdmin = Session.CurrentUser?.es_administrador == "S";
+            btnEliminarCurso.Visible = isAdmin;
+            btnEliminarCurso.Enabled = isAdmin; // Ensure button is enabled for admins
+            Console.WriteLine($"ConfigurarVisibilidadBotones: isAdmin={isAdmin}");
         }
 
         private void ConfigurarBotonEliminar()
@@ -101,32 +99,35 @@ namespace GUI
             btnEliminarCurso.IconColor = Color.White;
             btnEliminarCurso.IconSize = 24;
             btnEliminarCurso.TextImageRelation = TextImageRelation.ImageBeforeText;
-            btnEliminarCurso.Click += btnEliminarCurso_Click;
         }
 
         private void btnEliminarCurso_Click(object sender, EventArgs e)
         {
-            if (Session.CurrentUser?.es_administrador != "S")
-            {
-                MessageBox.Show("Solo los administradores pueden eliminar cursos",
-                    "Acceso denegado",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
+            Console.WriteLine($"btnEliminarCurso_Click triggered at: {DateTime.Now:HH:mm:ss.fff}");
+            if (_isProcessing) return;
+            _isProcessing = true;
+            btnEliminarCurso.Enabled = false;
 
-            var confirmacion = MessageBox.Show(
-                $"¿Está seguro que desea eliminar permanentemente el curso: {_curso.nombre_curso}?\n\nEsta acción no se puede deshacer.",
-                "Confirmar eliminación",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Warning,
-                MessageBoxDefaultButton.Button2);
-
-            if (confirmacion == DialogResult.Yes)
+            try
             {
-                try
+                if (Session.CurrentUser?.es_administrador != "S")
+                {
+                    MessageBox.Show("Solo los administradores pueden eliminar cursos",
+                        "Acceso denegado",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                var confirmacion = MessageBox.Show(
+                    $"¿Está seguro que desea eliminar permanentemente el curso: {_curso.nombre_curso}?\n\nEsta acción no se puede deshacer.",
+                    "Confirmar eliminación",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning,
+                    MessageBoxDefaultButton.Button2);
+
+                if (confirmacion == DialogResult.Yes)
                 {
                     var resultado = _cursoService.Eliminar(_cursoId);
-
                     if (resultado.StartsWith("Error"))
                     {
                         MessageBox.Show(resultado, "Error al eliminar",
@@ -140,12 +141,17 @@ namespace GUI
                         this.Close();
                     }
                 }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Error al procesar la eliminación: {ex.Message}",
-                        "Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al procesar la eliminación: {ex.Message}",
+                    "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                _isProcessing = false;
+                btnEliminarCurso.Enabled = btnEliminarCurso.Visible; // Re-enable only if visible
             }
         }
 
@@ -157,9 +163,7 @@ namespace GUI
 
         private void FrmDetalleCursoAdmin_Load(object sender, EventArgs e)
         {
-            // Configuraciones adicionales al cargar el formulario
+            // No additional logic needed
         }
-
-        // [...] (otros métodos existentes)
     }
 }

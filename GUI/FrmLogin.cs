@@ -46,51 +46,53 @@ namespace GUI
             // Abrir formulario principal según el tipo de usuario
             if (usuario.es_administrador == "S")
             {
-                FrmPrincipalAdmin frmPrincipalAdmin = new FrmPrincipalAdmin();
-                frmPrincipalAdmin.ShowDialog();
+                using (FrmPrincipalAdmin frmPrincipalAdmin = new FrmPrincipalAdmin())
+                {
+                    frmPrincipalAdmin.ShowDialog();
+                }
             }
             else
             {
-                FrmPrincipalUser frmPrincipalUser = new FrmPrincipalUser();
-                frmPrincipalUser.ShowDialog();
+                using (FrmPrincipalUser frmPrincipalUser = new FrmPrincipalUser())
+                {
+                    frmPrincipalUser.ShowDialog();
+                }
             }
 
-            this.Hide();
+            // Cerrar el formulario de login
+            this.Close();
         }
 
         private void btnRegistrarse_Click(object sender, EventArgs e)
         {
-
             this.Hide();
             using (RegistroForm registroForm = new RegistroForm())
             {
                 registroForm.ShowDialog();
             }
             this.Show();
-            
         }
 
         private void FrmLogin_FormClosed(object sender, FormClosedEventArgs e)
         {
-            //Application.Exit();
-
-            // Verifica si ya existe una instancia abierta de FrmInicio2
-            //Form frmInicio2 = Application.OpenForms["FrmInicio2"];
-            //if (frmInicio2 == null)
-            //{
-            //    frmInicio2 = new FrmInicio2();
-            //    frmInicio2.Show();
-            //}
-            //else
-            //{
-            //    frmInicio2.Show();
-            //    frmInicio2.BringToFront();
-            //}
+            // Buscar la instancia existente de FrmInicio2
+            Form frmInicio2 = Application.OpenForms["FrmInicio2"];
+            if (frmInicio2 != null)
+            {
+                frmInicio2.Show();
+                frmInicio2.BringToFront();
+            }
+            else
+            {
+                // Si FrmInicio2 no está abierto, puedes decidir qué hacer
+                // Por ejemplo, abrir una nueva instancia o cerrar la aplicación
+                frmInicio2 = new FrmInicio2();
+                frmInicio2.Show();
+            }
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)
         {
-
         }
 
         private void lblinkRegistrarse_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -105,19 +107,14 @@ namespace GUI
 
         private void label5_Click(object sender, EventArgs e)
         {
-
         }
 
         private void label4_Click(object sender, EventArgs e)
         {
-
         }
 
         private void FrmLogin_Load(object sender, EventArgs e)
         {
-            //FrmInicio2 frmInicio = new FrmInicio2();
-            //frmInicio.Show();
-            //this.Hide();
         }
 
         private void txtEmail_Enter(object sender, EventArgs e)

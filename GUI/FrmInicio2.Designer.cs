@@ -352,7 +352,7 @@ namespace GUI
             this.pictureBoxDashboard.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxDashboard.TabIndex = 0;
             this.pictureBoxDashboard.TabStop = false;
-            this.pictureBoxDashboard.Click += new System.EventHandler(this.pictureBoxDashboard_Click);
+            //this.pictureBoxDashboard.Click += new System.EventHandler(this.pictureBoxDashboard_Click);
             // 
             // tabCursos
             // 

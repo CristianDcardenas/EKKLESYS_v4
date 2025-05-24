@@ -32,6 +32,7 @@ namespace GUI
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmInicio2));
             this.panelHeader = new System.Windows.Forms.Panel();
             this.btnRegistrarse = new System.Windows.Forms.Button();
             this.btnIniciarSesion = new System.Windows.Forms.Button();
@@ -344,7 +345,7 @@ namespace GUI
             // 
             this.pictureBoxDashboard.BackColor = System.Drawing.Color.White;
             this.pictureBoxDashboard.Dock = System.Windows.Forms.DockStyle.Right;
-            this.pictureBoxDashboard.Image = global::GUI.Properties.Resources.lakewood;
+            this.pictureBoxDashboard.Image = ((System.Drawing.Image)(resources.GetObject("pictureBoxDashboard.Image")));
             this.pictureBoxDashboard.Location = new System.Drawing.Point(208, 0);
             this.pictureBoxDashboard.Margin = new System.Windows.Forms.Padding(4);
             this.pictureBoxDashboard.Name = "pictureBoxDashboard";
@@ -352,7 +353,6 @@ namespace GUI
             this.pictureBoxDashboard.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxDashboard.TabIndex = 0;
             this.pictureBoxDashboard.TabStop = false;
-            //this.pictureBoxDashboard.Click += new System.EventHandler(this.pictureBoxDashboard_Click);
             // 
             // tabCursos
             // 

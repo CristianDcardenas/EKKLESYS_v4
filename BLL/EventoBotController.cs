@@ -105,7 +105,7 @@ namespace BLL
                 string eventoText = evento.nombre_evento + " - " + evento.fecha_inicio_evento.ToString("dd/MM/yyyy");
 
                 inlineKeyboard.Add(new[] {
-                    InlineKeyboardButton.WithCallbackData(eventoText, "ver evento|" + evento.id_evento)
+                    InlineKeyboardButton.WithCallbackData(eventoText, "verevento|" + evento.id_evento)
                 });
             }
 
@@ -131,7 +131,7 @@ namespace BLL
             var action = data[0];
             var id = data.Length > 1 ? data[1] : null;
 
-            if (action == "ver evento" && id != null)
+            if (action == "verevento" && id != null)
             {
                 int eventoId;
                 if (int.TryParse(id, out eventoId))
@@ -217,7 +217,7 @@ namespace BLL
             // Crear botones inline para cancelar
             var cancelButtons = new List<InlineKeyboardButton[]>();
             cancelButtons.Add(new[] {
-                InlineKeyboardButton.WithCallbackData("❌ Cancelar", "ver evento|" + eventoId)
+                InlineKeyboardButton.WithCallbackData("❌ Cancelar", "verevento|" + eventoId)
             });
 
             var cancelMarkup = new InlineKeyboardMarkup(cancelButtons);
@@ -249,7 +249,7 @@ namespace BLL
                     InlineKeyboardButton.WithCallbackData("🔄 Intentar nuevamente", "asistir|" + eventoId)
                 });
                 errorButtons.Add(new[] {
-                    InlineKeyboardButton.WithCallbackData("❌ Cancelar", "ver evento|" + eventoId)
+                    InlineKeyboardButton.WithCallbackData("❌ Cancelar", "verevento|" + eventoId)
                 });
 
                 var errorMarkup = new InlineKeyboardMarkup(errorButtons);
@@ -276,7 +276,7 @@ namespace BLL
                 // Crear botones inline para volver
                 var notFoundButtons = new List<InlineKeyboardButton[]>();
                 notFoundButtons.Add(new[] {
-                    InlineKeyboardButton.WithCallbackData("🔙 Volver", "ver evento|" + eventoId)
+                    InlineKeyboardButton.WithCallbackData("🔙 Volver", "verevento|" + eventoId)
                 });
 
                 var notFoundMarkup = new InlineKeyboardMarkup(notFoundButtons);

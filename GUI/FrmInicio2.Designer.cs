@@ -32,6 +32,7 @@ namespace GUI
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmInicio2));
             this.panelHeader = new System.Windows.Forms.Panel();
             this.btnRegistrarse = new System.Windows.Forms.Button();
             this.btnIniciarSesion = new System.Windows.Forms.Button();
@@ -314,8 +315,14 @@ namespace GUI
             // 
             this.pictureBoxDashboard.BackColor = System.Drawing.Color.White;
             this.pictureBoxDashboard.Dock = System.Windows.Forms.DockStyle.Right;
+<<<<<<< HEAD
             this.pictureBoxDashboard.Image = global::GUI.Properties.Resources.lakewood;
             this.pictureBoxDashboard.Location = new System.Drawing.Point(154, 0);
+=======
+            this.pictureBoxDashboard.Image = ((System.Drawing.Image)(resources.GetObject("pictureBoxDashboard.Image")));
+            this.pictureBoxDashboard.Location = new System.Drawing.Point(208, 0);
+            this.pictureBoxDashboard.Margin = new System.Windows.Forms.Padding(4);
+>>>>>>> 431fab0ba947596bf077b225ba0ec1c81f709e1f
             this.pictureBoxDashboard.Name = "pictureBoxDashboard";
             this.pictureBoxDashboard.Size = new System.Drawing.Size(856, 444);
             this.pictureBoxDashboard.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;

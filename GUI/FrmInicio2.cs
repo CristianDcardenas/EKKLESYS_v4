@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace GUI
@@ -52,7 +53,9 @@ namespace GUI
 
         private void CargarCursos()
         {
-            cursos = cursoService.ConsultarDTO();
+            cursos = cursoService.ConsultarDTO()
+            .Where(c => c.fecha_inicio_curso <= DateTime.Now && c.fecha_fin_curso >= DateTime.Now)
+            .ToList();
             flpCursos.Controls.Clear();
 
             foreach (var curso in cursos)
@@ -246,7 +249,9 @@ namespace GUI
 
         private void CargarEventos()
         {
-            eventos = eventoService.ConsultarDTO();
+            eventos = eventoService.ConsultarDTO()
+            .Where(e => e.fecha_inicio_evento <= DateTime.Now && e.fecha_fin_evento >= DateTime.Now)
+            .ToList();
             flpEventos.Controls.Clear();
 
             foreach (var evento in eventos)

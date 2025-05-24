@@ -194,6 +194,9 @@
       <DependentUpon>RegistroForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Session.cs" />
+    <EmbeddedResource Include="Forms Admin\FrmAsistentesEvento.resx">
+      <DependentUpon>FrmAsistentesEvento.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms Admin\FrmCrearCurso.resx">
       <DependentUpon>FrmCrearCurso.cs</DependentUpon>
     </EmbeddedResource>
@@ -211,6 +214,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms Admin\FrmGestionComunas.resx">
       <DependentUpon>FrmGestionComunas.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms Admin\FrmInscritosCurso.resx">
+      <DependentUpon>FrmInscritosCurso.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms User\FrmCursosUser.resx">
       <DependentUpon>FrmCursosUser.cs</DependentUpon>

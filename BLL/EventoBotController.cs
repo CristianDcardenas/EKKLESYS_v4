@@ -74,7 +74,9 @@ namespace BLL
 
         public async Task MostrarEventos(long chatId)
         {
-            var eventos = _eventoService.ConsultarProximosEventosDTO();
+            var eventos = _eventoService.ConsultarProximosEventosDTO()
+            .Where(e => e.fecha_inicio_evento <= DateTime.Now && e.fecha_fin_evento >= DateTime.Now)
+            .ToList();
 
             if (eventos.Count == 0)
             {
@@ -129,7 +131,7 @@ namespace BLL
             var action = data[0];
             var id = data.Length > 1 ? data[1] : null;
 
-            if (action == "verevento" && id != null)
+            if (action == "ver evento" && id != null)
             {
                 int eventoId;
                 if (int.TryParse(id, out eventoId))

@@ -82,7 +82,9 @@ namespace BLL
 
         public async Task MostrarCursos(long chatId)
         {
-            var cursos = _cursoService.ConsultarDTO();
+            var cursos = _cursoService.ConsultarDTO()
+                .Where(c => c.fecha_inicio_curso <= DateTime.Now && c.fecha_fin_curso >= DateTime.Now)
+                .ToList();
 
             if (cursos.Count == 0)
             {

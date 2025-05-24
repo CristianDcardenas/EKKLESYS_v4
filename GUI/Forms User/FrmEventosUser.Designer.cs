@@ -24,6 +24,7 @@
             this.btnRefrescar = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.flpEventos = new System.Windows.Forms.FlowLayoutPanel();
+            this.cmbFiltroEvento = new System.Windows.Forms.ComboBox();
             this.panel1.SuspendLayout();
             this.panelSearch.SuspendLayout();
             this.SuspendLayout();
@@ -31,13 +32,14 @@
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
+            this.panel1.Controls.Add(this.cmbFiltroEvento);
             this.panel1.Controls.Add(this.panelSearch);
             this.panel1.Controls.Add(this.btnRefrescar);
             this.panel1.Controls.Add(this.label1);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(800, 60);
+            this.panel1.Size = new System.Drawing.Size(958, 60);
             this.panel1.TabIndex = 0;
             // 
             // panelSearch
@@ -47,7 +49,7 @@
             this.panelSearch.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panelSearch.Controls.Add(this.txtSearch);
             this.panelSearch.Controls.Add(this.btnSearch);
-            this.panelSearch.Location = new System.Drawing.Point(325, 15);
+            this.panelSearch.Location = new System.Drawing.Point(356, 15);
             this.panelSearch.Name = "panelSearch";
             this.panelSearch.Size = new System.Drawing.Size(250, 30);
             this.panelSearch.TabIndex = 3;
@@ -90,7 +92,7 @@
             this.btnRefrescar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnRefrescar.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.btnRefrescar.ForeColor = System.Drawing.Color.White;
-            this.btnRefrescar.Location = new System.Drawing.Point(711, 15);
+            this.btnRefrescar.Location = new System.Drawing.Point(869, 15);
             this.btnRefrescar.Name = "btnRefrescar";
             this.btnRefrescar.Size = new System.Drawing.Size(77, 30);
             this.btnRefrescar.TabIndex = 2;
@@ -117,16 +119,26 @@
             this.flpEventos.Location = new System.Drawing.Point(0, 60);
             this.flpEventos.Name = "flpEventos";
             this.flpEventos.Padding = new System.Windows.Forms.Padding(15);
-            this.flpEventos.Size = new System.Drawing.Size(800, 440);
+            this.flpEventos.Size = new System.Drawing.Size(958, 650);
             this.flpEventos.TabIndex = 1;
             this.flpEventos.Paint += new System.Windows.Forms.PaintEventHandler(this.flpEventos_Paint);
+            // 
+            // cmbFiltroEvento
+            // 
+            this.cmbFiltroEvento.Font = new System.Drawing.Font("Segoe UI", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmbFiltroEvento.FormattingEnabled = true;
+            this.cmbFiltroEvento.Location = new System.Drawing.Point(657, 15);
+            this.cmbFiltroEvento.Name = "cmbFiltroEvento";
+            this.cmbFiltroEvento.Size = new System.Drawing.Size(184, 31);
+            this.cmbFiltroEvento.TabIndex = 2;
+            this.cmbFiltroEvento.SelectedIndexChanged += new System.EventHandler(this.cmbFiltroEvento_SelectedIndexChanged);
             // 
             // FrmEventosUser
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 19F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(245)))), ((int)(((byte)(246)))), ((int)(((byte)(250)))));
-            this.ClientSize = new System.Drawing.Size(800, 500);
+            this.ClientSize = new System.Drawing.Size(958, 710);
             this.Controls.Add(this.flpEventos);
             this.Controls.Add(this.panel1);
             this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -153,5 +165,6 @@
         private System.Windows.Forms.Panel panelSearch;
         private System.Windows.Forms.TextBox txtSearch;
         private System.Windows.Forms.Button btnSearch;
+        private System.Windows.Forms.ComboBox cmbFiltroEvento;
     }
 }

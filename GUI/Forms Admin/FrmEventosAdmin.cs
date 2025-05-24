@@ -239,6 +239,7 @@ namespace GUI
                 ApplyRoundedCorners(btnVerDetalles, 5);
 
                 int eventoId = evento.id_evento;
+                btnVerDetalles.Enabled = !(evento.fecha_fin_evento < DateTime.Now);
                 btnVerDetalles.Click += (sender, e) => MostrarDetallesEvento(eventoId);
 
                 contentPanel.Controls.Add(lblNombre);

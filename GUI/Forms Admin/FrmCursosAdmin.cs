@@ -210,6 +210,7 @@ namespace GUI
                 ApplyRoundedCorners(btnVerDetalles, 5);
 
                 int cursoId = curso.id_curso;
+                btnVerDetalles.Enabled = !(curso.fecha_fin_curso < DateTime.Now);
                 btnVerDetalles.Click += (sender, e) => MostrarDetallesCurso(cursoId);
 
                 contentPanel.Controls.Add(lblNombre);

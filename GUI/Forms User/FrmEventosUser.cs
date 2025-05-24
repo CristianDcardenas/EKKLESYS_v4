@@ -23,6 +23,12 @@ namespace GUI
             CargarEventos();
         }
 
+        private enum FiltroEventos
+        {
+            Activos,
+            Proximos,
+            Pasados
+        }
         private void CargarEventos()
         {
             eventos = eventoService.ConsultarDTO();
@@ -471,12 +477,59 @@ namespace GUI
 
         private void EventosForm_Load(object sender, EventArgs e)
         {
+            ActualizarOpcionesCombo(FiltroEventos.Activos);
+            var cursosFiltrados = FiltrarEventos(FiltroEventos.Activos);
+            MostrarEventos(cursosFiltrados);
             // Inicializar controles adicionales si es necesario
         }
 
         private void flpEventos_Paint(object sender, PaintEventArgs e)
         {
             // Mantener evento vacío si no se necesita
+        }
+
+
+        private bool actualizandoCombo = false;
+        private void ActualizarOpcionesCombo(FiltroEventos seleccionado)
+        {
+            actualizandoCombo = true;
+            cmbFiltroEvento.Items.Clear();
+            foreach (FiltroEventos filtro in Enum.GetValues(typeof(FiltroEventos)))
+            {
+                if (filtro != seleccionado)
+                {
+                    cmbFiltroEvento.Items.Add(filtro.ToString());
+                }
+            }
+            // Selecciona la primera opción disponible
+            if (cmbFiltroEvento.Items.Count > 0)
+                cmbFiltroEvento.SelectedIndex = 0;
+            actualizandoCombo = false;
+        }
+
+
+        private List<EventoDTO> FiltrarEventos(FiltroEventos filtro)
+        {
+            DateTime ahora = DateTime.Now;
+            switch (filtro)
+            {
+                case FiltroEventos.Activos:
+                    return eventos.Where(e => e.fecha_inicio_evento <= ahora && e.fecha_fin_evento >= ahora).ToList();
+                case FiltroEventos.Proximos:
+                    return eventos.Where(e => e.fecha_inicio_evento > ahora).ToList();
+                case FiltroEventos.Pasados:
+                    return eventos.Where(e => e.fecha_fin_evento < ahora).ToList();
+                default:
+                    return eventos;
+            }
+        }
+        private void cmbFiltroEvento_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (actualizandoCombo || cmbFiltroEvento.SelectedItem == null) return;
+            FiltroEventos filtroSeleccionado = (FiltroEventos)Enum.Parse(typeof(FiltroEventos), cmbFiltroEvento.SelectedItem.ToString());
+            var cursosFiltrados = FiltrarEventos(filtroSeleccionado);
+            MostrarEventos(cursosFiltrados);
+            ActualizarOpcionesCombo(filtroSeleccionado);
         }
     }
 }

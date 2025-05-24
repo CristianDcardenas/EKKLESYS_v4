@@ -173,6 +173,12 @@
     <Compile Include="Forms Admin\FrmUsuarios.Designer.cs">
       <DependentUpon>FrmUsuarios.cs</DependentUpon>
     </Compile>
+    <Compile Include="FrmQr.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmQr.Designer.cs">
+      <DependentUpon>FrmQr.cs</DependentUpon>
+    </Compile>
     <Compile Include="PerfilForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -188,6 +194,9 @@
       <DependentUpon>RegistroForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Session.cs" />
+    <EmbeddedResource Include="Forms Admin\FrmAsistentesEvento.resx">
+      <DependentUpon>FrmAsistentesEvento.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms Admin\FrmCrearCurso.resx">
       <DependentUpon>FrmCrearCurso.cs</DependentUpon>
     </EmbeddedResource>
@@ -205,6 +214,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms Admin\FrmGestionComunas.resx">
       <DependentUpon>FrmGestionComunas.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms Admin\FrmInscritosCurso.resx">
+      <DependentUpon>FrmInscritosCurso.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms User\FrmCursosUser.resx">
       <DependentUpon>FrmCursosUser.cs</DependentUpon>
@@ -235,6 +247,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms Admin\FrmUsuarios.resx">
       <DependentUpon>FrmUsuarios.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmQr.resx">
+      <DependentUpon>FrmQr.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PerfilForm.resx">
       <DependentUpon>PerfilForm.cs</DependentUpon>
@@ -277,6 +292,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\qr.png" />
+    <None Include="Resources\bot.png" />
     <Content Include="Resources\logo_ekklesys_redondo.png" />
     <None Include="Resources\ojo1.png" />
     <None Include="Resources\ojo.png" />

@@ -130,6 +130,16 @@ namespace GUI
                     return;
                 }
 
+                // Validar si el curso ya finalizó
+                if (_curso != null && _curso.fecha_fin_curso < DateTime.Now)
+                {
+                    MessageBox.Show("No es posible inscribirse a un curso que ha finalizado.",
+                        "Curso finalizado",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                    return;
+                }
+
                 bool yaInscrito = btnInscribir.Tag != null && (bool)btnInscribir.Tag;
                 string resultado;
 

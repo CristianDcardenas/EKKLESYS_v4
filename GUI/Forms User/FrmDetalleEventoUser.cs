@@ -129,6 +129,16 @@ namespace GUI
                 return;
             }
 
+            // Validar si el evento ya finalizó
+            if (_evento != null && _evento.fecha_fin_evento < DateTime.Now)
+            {
+                MessageBox.Show("No es posible registrar asistencia a un evento finalizado.",
+                    "Evento finalizado",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
+
             bool yaRegistrado = btnAsistir.Tag != null && (bool)btnAsistir.Tag;
 
             string mensaje;

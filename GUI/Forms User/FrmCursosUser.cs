@@ -18,10 +18,12 @@ namespace GUI
 
         private enum FiltroCurso
         {
+            Todos,
             Activos,
             Proximos,
             Pasados
         }
+
         public FrmCursosUser()
         {
             InitializeComponent();
@@ -273,6 +275,7 @@ namespace GUI
         private void btnRefrescar_Click(object sender, EventArgs e)
         {
             CargarCursos();
+            ActualizarOpcionesCombo(FiltroCurso.Todos); // Reset filter to "Todos"
         }
 
         private void btnSearch_Click(object sender, EventArgs e)
@@ -428,10 +431,9 @@ namespace GUI
 
         private void FrmCursosUser_Load(object sender, EventArgs e)
         {
-            ActualizarOpcionesCombo(FiltroCurso.Activos);
-            var cursosFiltrados = FiltrarCursos(FiltroCurso.Activos);
+            ActualizarOpcionesCombo(FiltroCurso.Todos);
+            var cursosFiltrados = FiltrarCursos(FiltroCurso.Todos);
             MostrarCursos(cursosFiltrados);
-            // Inicializar controles adicionales si es necesario
         }
 
         private void flpCursos_Paint(object sender, PaintEventArgs e)
@@ -447,18 +449,12 @@ namespace GUI
 
             foreach (FiltroCurso filtro in Enum.GetValues(typeof(FiltroCurso)))
             {
-                if (filtro != seleccionado)
-                {
-                    cmbFiltroCursos.Items.Add(filtro.ToString());
-                }
-                
-                
+                cmbFiltroCursos.Items.Add(filtro.ToString());
             }
 
-            // Selecciona la primera opción disponible
-            if (cmbFiltroCursos.Items.Count > 0)
-                cmbFiltroCursos.SelectedIndex = 0;
-                actualizandoCombo = false;
+            // Seleccionar la opción correspondiente
+            cmbFiltroCursos.SelectedItem = seleccionado.ToString();
+            actualizandoCombo = false;
         }
 
         private List<CursoDTO> FiltrarCursos(FiltroCurso filtro)
@@ -466,6 +462,8 @@ namespace GUI
             DateTime ahora = DateTime.Now;
             switch (filtro)
             {
+                case FiltroCurso.Todos:
+                    return cursos.ToList();
                 case FiltroCurso.Activos:
                     return cursos.Where(c => c.fecha_inicio_curso <= ahora && c.fecha_fin_curso >= ahora).ToList();
                 case FiltroCurso.Proximos:
@@ -473,23 +471,18 @@ namespace GUI
                 case FiltroCurso.Pasados:
                     return cursos.Where(c => c.fecha_fin_curso < ahora).ToList();
                 default:
-                    return cursos;
+                    return cursos.ToList();
             }
         }
+
         private void cmbFiltroCursos_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (actualizandoCombo || cmbFiltroCursos.SelectedItem == null) return;
             FiltroCurso filtroSeleccionado = (FiltroCurso)Enum.Parse(typeof(FiltroCurso), cmbFiltroCursos.SelectedItem.ToString());
             var cursosFiltrados = FiltrarCursos(filtroSeleccionado);
             MostrarCursos(cursosFiltrados);
+            label1.Text = $"Cursos ({cursosFiltrados.Count})";
             ActualizarOpcionesCombo(filtroSeleccionado);
-
-            // if (cmbFiltroCursos.SelectedItem == null) return;
-            // FiltroCurso filtroSeleccionado = (FiltroCurso)Enum.Parse(typeof(FiltroCurso), cmbFiltroCursos.SelectedItem.ToString());
-            // var cursosFiltrados = FiltrarCursos(filtroSeleccionado);
-            // MostrarCursos(cursosFiltrados);
-            ////Mostrar solo las opciones disponibles
-            // ActualizarOpcionesCombo(filtroSeleccionado);
         }
     }
-    }
+}

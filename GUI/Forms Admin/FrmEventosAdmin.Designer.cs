@@ -17,7 +17,9 @@
 
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.cmbFiltrarEventos = new System.Windows.Forms.ComboBox();
             this.panelSearch = new System.Windows.Forms.Panel();
             this.txtSearch = new System.Windows.Forms.TextBox();
             this.btnSearch = new System.Windows.Forms.Button();
@@ -25,7 +27,7 @@
             this.btnNuevoEvento = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.flpEventos = new System.Windows.Forms.FlowLayoutPanel();
-            this.cmbFiltrarEventos = new System.Windows.Forms.ComboBox();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.panel1.SuspendLayout();
             this.panelSearch.SuspendLayout();
             this.SuspendLayout();
@@ -44,6 +46,19 @@
             this.panel1.Size = new System.Drawing.Size(995, 60);
             this.panel1.TabIndex = 0;
             // 
+            // cmbFiltrarEventos
+            // 
+            this.cmbFiltrarEventos.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.cmbFiltrarEventos.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbFiltrarEventos.Font = new System.Drawing.Font("Segoe UI", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmbFiltrarEventos.FormattingEnabled = true;
+            this.cmbFiltrarEventos.Location = new System.Drawing.Point(648, 15);
+            this.cmbFiltrarEventos.Name = "cmbFiltrarEventos";
+            this.cmbFiltrarEventos.Size = new System.Drawing.Size(167, 31);
+            this.cmbFiltrarEventos.TabIndex = 3;
+            this.toolTip1.SetToolTip(this.cmbFiltrarEventos, "Filtrar eventos por estado: Todos, Activos, Próximos o Pasados");
+            this.cmbFiltrarEventos.SelectedIndexChanged += new System.EventHandler(this.cmbFiltrarEventos_SelectedIndexChanged);
+            // 
             // panelSearch
             // 
             this.panelSearch.Anchor = System.Windows.Forms.AnchorStyles.Top;
@@ -51,10 +66,10 @@
             this.panelSearch.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panelSearch.Controls.Add(this.txtSearch);
             this.panelSearch.Controls.Add(this.btnSearch);
-            this.panelSearch.Location = new System.Drawing.Point(358, 15);
+            this.panelSearch.Location = new System.Drawing.Point(347, 15);
             this.panelSearch.Name = "panelSearch";
-            this.panelSearch.Size = new System.Drawing.Size(250, 30);
-            this.panelSearch.TabIndex = 3;
+            this.panelSearch.Size = new System.Drawing.Size(300, 30);
+            this.panelSearch.TabIndex = 2;
             // 
             // txtSearch
             // 
@@ -64,7 +79,7 @@
             this.txtSearch.Location = new System.Drawing.Point(0, 0);
             this.txtSearch.Margin = new System.Windows.Forms.Padding(10, 3, 3, 3);
             this.txtSearch.Name = "txtSearch";
-            this.txtSearch.Size = new System.Drawing.Size(218, 23);
+            this.txtSearch.Size = new System.Drawing.Size(268, 23);
             this.txtSearch.TabIndex = 0;
             this.txtSearch.Text = "Buscar evento...";
             this.txtSearch.Enter += new System.EventHandler(this.txtSearch_Enter);
@@ -78,7 +93,7 @@
             this.btnSearch.FlatAppearance.BorderSize = 0;
             this.btnSearch.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSearch.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.btnSearch.Location = new System.Drawing.Point(218, 0);
+            this.btnSearch.Location = new System.Drawing.Point(268, 0);
             this.btnSearch.Name = "btnSearch";
             this.btnSearch.Size = new System.Drawing.Size(30, 28);
             this.btnSearch.TabIndex = 1;
@@ -97,7 +112,7 @@
             this.btnRefrescar.Location = new System.Drawing.Point(821, 15);
             this.btnRefrescar.Name = "btnRefrescar";
             this.btnRefrescar.Size = new System.Drawing.Size(77, 30);
-            this.btnRefrescar.TabIndex = 2;
+            this.btnRefrescar.TabIndex = 4;
             this.btnRefrescar.Text = "Refrescar";
             this.btnRefrescar.UseVisualStyleBackColor = false;
             this.btnRefrescar.Click += new System.EventHandler(this.btnRefrescar_Click);
@@ -110,10 +125,10 @@
             this.btnNuevoEvento.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnNuevoEvento.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.btnNuevoEvento.ForeColor = System.Drawing.Color.White;
-            this.btnNuevoEvento.Location = new System.Drawing.Point(906, 15);
+            this.btnNuevoEvento.Location = new System.Drawing.Point(904, 15);
             this.btnNuevoEvento.Name = "btnNuevoEvento";
             this.btnNuevoEvento.Size = new System.Drawing.Size(77, 30);
-            this.btnNuevoEvento.TabIndex = 1;
+            this.btnNuevoEvento.TabIndex = 5;
             this.btnNuevoEvento.Text = "Nuevo";
             this.btnNuevoEvento.UseVisualStyleBackColor = false;
             this.btnNuevoEvento.Click += new System.EventHandler(this.btnNuevoEvento_Click);
@@ -140,15 +155,11 @@
             this.flpEventos.Size = new System.Drawing.Size(995, 682);
             this.flpEventos.TabIndex = 1;
             // 
-            // cmbFiltrarEventos
+            // toolTip1
             // 
-            this.cmbFiltrarEventos.Font = new System.Drawing.Font("Segoe UI", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cmbFiltrarEventos.FormattingEnabled = true;
-            this.cmbFiltrarEventos.Location = new System.Drawing.Point(636, 15);
-            this.cmbFiltrarEventos.Name = "cmbFiltrarEventos";
-            this.cmbFiltrarEventos.Size = new System.Drawing.Size(163, 31);
-            this.cmbFiltrarEventos.TabIndex = 0;
-            this.cmbFiltrarEventos.SelectedIndexChanged += new System.EventHandler(this.cmbFiltrarEventos_SelectedIndexChanged);
+            this.toolTip1.AutoPopDelay = 5000;
+            this.toolTip1.InitialDelay = 500;
+            this.toolTip1.ReshowDelay = 100;
             // 
             // FrmEventosAdmin
             // 
@@ -184,5 +195,6 @@
         private System.Windows.Forms.TextBox txtSearch;
         private System.Windows.Forms.Button btnSearch;
         private System.Windows.Forms.ComboBox cmbFiltrarEventos;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }

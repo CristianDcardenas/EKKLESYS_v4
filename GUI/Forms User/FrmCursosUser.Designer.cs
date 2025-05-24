@@ -17,6 +17,7 @@
 
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.panel1 = new System.Windows.Forms.Panel();
             this.cmbFiltroCursos = new System.Windows.Forms.ComboBox();
             this.panelSearch = new System.Windows.Forms.Panel();
@@ -25,6 +26,7 @@
             this.btnRefrescar = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.flpCursos = new System.Windows.Forms.FlowLayoutPanel();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.panel1.SuspendLayout();
             this.panelSearch.SuspendLayout();
             this.SuspendLayout();
@@ -44,13 +46,15 @@
             // 
             // cmbFiltroCursos
             // 
+            this.cmbFiltroCursos.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.cmbFiltroCursos.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbFiltroCursos.Font = new System.Drawing.Font("Segoe UI", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cmbFiltroCursos.FormattingEnabled = true;
-            this.cmbFiltroCursos.Location = new System.Drawing.Point(648, 15);
+            this.cmbFiltroCursos.Location = new System.Drawing.Point(665, 15);
             this.cmbFiltroCursos.Name = "cmbFiltroCursos";
             this.cmbFiltroCursos.Size = new System.Drawing.Size(167, 31);
-            this.cmbFiltroCursos.TabIndex = 4;
+            this.cmbFiltroCursos.TabIndex = 3;
+            this.toolTip1.SetToolTip(this.cmbFiltroCursos, "Filtrar cursos por estado: Todos, Activos, Próximos o Pasados");
             this.cmbFiltroCursos.SelectedIndexChanged += new System.EventHandler(this.cmbFiltroCursos_SelectedIndexChanged);
             // 
             // panelSearch
@@ -60,10 +64,10 @@
             this.panelSearch.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panelSearch.Controls.Add(this.txtSearch);
             this.panelSearch.Controls.Add(this.btnSearch);
-            this.panelSearch.Location = new System.Drawing.Point(371, 15);
+            this.panelSearch.Location = new System.Drawing.Point(344, 15);
             this.panelSearch.Name = "panelSearch";
-            this.panelSearch.Size = new System.Drawing.Size(250, 30);
-            this.panelSearch.TabIndex = 3;
+            this.panelSearch.Size = new System.Drawing.Size(300, 30);
+            this.panelSearch.TabIndex = 2;
             // 
             // txtSearch
             // 
@@ -73,7 +77,7 @@
             this.txtSearch.Location = new System.Drawing.Point(0, 0);
             this.txtSearch.Margin = new System.Windows.Forms.Padding(10, 3, 3, 3);
             this.txtSearch.Name = "txtSearch";
-            this.txtSearch.Size = new System.Drawing.Size(218, 23);
+            this.txtSearch.Size = new System.Drawing.Size(268, 23);
             this.txtSearch.TabIndex = 0;
             this.txtSearch.Text = "Buscar curso...";
             this.txtSearch.Enter += new System.EventHandler(this.txtSearch_Enter);
@@ -87,7 +91,7 @@
             this.btnSearch.FlatAppearance.BorderSize = 0;
             this.btnSearch.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSearch.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.btnSearch.Location = new System.Drawing.Point(218, 0);
+            this.btnSearch.Location = new System.Drawing.Point(268, 0);
             this.btnSearch.Name = "btnSearch";
             this.btnSearch.Size = new System.Drawing.Size(30, 28);
             this.btnSearch.TabIndex = 1;
@@ -103,10 +107,10 @@
             this.btnRefrescar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnRefrescar.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.btnRefrescar.ForeColor = System.Drawing.Color.White;
-            this.btnRefrescar.Location = new System.Drawing.Point(849, 15);
+            this.btnRefrescar.Location = new System.Drawing.Point(838, 15);
             this.btnRefrescar.Name = "btnRefrescar";
-            this.btnRefrescar.Size = new System.Drawing.Size(77, 30);
-            this.btnRefrescar.TabIndex = 2;
+            this.btnRefrescar.Size = new System.Drawing.Size(88, 30);
+            this.btnRefrescar.TabIndex = 4;
             this.btnRefrescar.Text = "Refrescar";
             this.btnRefrescar.UseVisualStyleBackColor = false;
             this.btnRefrescar.Click += new System.EventHandler(this.btnRefrescar_Click);
@@ -133,6 +137,12 @@
             this.flpCursos.Size = new System.Drawing.Size(938, 513);
             this.flpCursos.TabIndex = 1;
             this.flpCursos.Paint += new System.Windows.Forms.PaintEventHandler(this.flpCursos_Paint);
+            // 
+            // toolTip1
+            // 
+            this.toolTip1.AutoPopDelay = 5000;
+            this.toolTip1.InitialDelay = 500;
+            this.toolTip1.ReshowDelay = 100;
             // 
             // FrmCursosUser
             // 
@@ -167,5 +177,6 @@
         private System.Windows.Forms.TextBox txtSearch;
         private System.Windows.Forms.Button btnSearch;
         private System.Windows.Forms.ComboBox cmbFiltroCursos;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }

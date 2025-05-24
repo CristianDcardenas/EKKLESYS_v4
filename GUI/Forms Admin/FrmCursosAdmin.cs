@@ -23,6 +23,13 @@ namespace GUI
             CargarCursos();
         }
 
+        private enum FiltroCurso
+        {
+            Activos,
+            Proximos,
+            Pasados
+        }
+
         private void CargarCursos()
         {
             cursos = cursoService.ConsultarDTO();
@@ -432,7 +439,57 @@ namespace GUI
 
         private void CursosForm_Load(object sender, EventArgs e)
         {
+            ActualizarOpcionesCombo(FiltroCurso.Activos);
+            var cursosFiltrados = FiltrarCursos(FiltroCurso.Activos);
+            MostrarCursos(cursosFiltrados);
             // Inicializar controles adicionales si es necesario
+        }
+
+
+        private bool actualizandoCombo = false;
+        private void ActualizarOpcionesCombo(FiltroCurso seleccionado)
+        {
+            actualizandoCombo = true;
+            cmbFiltrarCursos.Items.Clear();
+
+            foreach (FiltroCurso filtro in Enum.GetValues(typeof(FiltroCurso)))
+            {
+                if (filtro != seleccionado)
+                {
+                    cmbFiltrarCursos.Items.Add(filtro.ToString());
+                }
+
+
+            }
+
+            // Selecciona la primera opción disponible
+            if (cmbFiltrarCursos.Items.Count > 0)
+                cmbFiltrarCursos.SelectedIndex = 0;
+            actualizandoCombo = false;
+        }
+
+        private List<CursoDTO> FiltrarCursos(FiltroCurso filtro)
+        {
+            DateTime ahora = DateTime.Now;
+            switch (filtro)
+            {
+                case FiltroCurso.Activos:
+                    return cursos.Where(c => c.fecha_inicio_curso <= ahora && c.fecha_fin_curso >= ahora).ToList();
+                case FiltroCurso.Proximos:
+                    return cursos.Where(c => c.fecha_inicio_curso > ahora).ToList();
+                case FiltroCurso.Pasados:
+                    return cursos.Where(c => c.fecha_fin_curso < ahora).ToList();
+                default:
+                    return cursos;
+            }
+        }
+        private void cmbFiltrarCursos_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (actualizandoCombo || cmbFiltrarCursos.SelectedItem == null) return;
+            FiltroCurso filtroSeleccionado = (FiltroCurso)Enum.Parse(typeof(FiltroCurso), cmbFiltrarCursos.SelectedItem.ToString());
+            var cursosFiltrados = FiltrarCursos(filtroSeleccionado);
+            MostrarCursos(cursosFiltrados);
+            ActualizarOpcionesCombo(filtroSeleccionado);
         }
     }
 }

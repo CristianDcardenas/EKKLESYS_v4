@@ -17,16 +17,14 @@
 
         private void InitializeComponent()
         {
-            
             this.panel1 = new System.Windows.Forms.Panel();
+            this.cmbFiltroCursos = new System.Windows.Forms.ComboBox();
             this.panelSearch = new System.Windows.Forms.Panel();
-            
             this.txtSearch = new System.Windows.Forms.TextBox();
             this.btnSearch = new System.Windows.Forms.Button();
             this.btnRefrescar = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.flpCursos = new System.Windows.Forms.FlowLayoutPanel();
-            this.cmbFiltroCursos = new System.Windows.Forms.ComboBox();
             this.panel1.SuspendLayout();
             this.panelSearch.SuspendLayout();
             this.SuspendLayout();
@@ -43,6 +41,17 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(938, 60);
             this.panel1.TabIndex = 0;
+            // 
+            // cmbFiltroCursos
+            // 
+            this.cmbFiltroCursos.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbFiltroCursos.Font = new System.Drawing.Font("Segoe UI", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmbFiltroCursos.FormattingEnabled = true;
+            this.cmbFiltroCursos.Location = new System.Drawing.Point(648, 15);
+            this.cmbFiltroCursos.Name = "cmbFiltroCursos";
+            this.cmbFiltroCursos.Size = new System.Drawing.Size(167, 31);
+            this.cmbFiltroCursos.TabIndex = 4;
+            this.cmbFiltroCursos.SelectedIndexChanged += new System.EventHandler(this.cmbFiltroCursos_SelectedIndexChanged);
             // 
             // panelSearch
             // 
@@ -124,17 +133,6 @@
             this.flpCursos.Size = new System.Drawing.Size(938, 513);
             this.flpCursos.TabIndex = 1;
             this.flpCursos.Paint += new System.Windows.Forms.PaintEventHandler(this.flpCursos_Paint);
-            // 
-            // cmbFiltroCursos
-            // 
-            this.cmbFiltroCursos.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbFiltroCursos.Font = new System.Drawing.Font("Segoe UI", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cmbFiltroCursos.FormattingEnabled = true;
-            this.cmbFiltroCursos.Location = new System.Drawing.Point(648, 15);
-            this.cmbFiltroCursos.Name = "cmbFiltroCursos";
-            this.cmbFiltroCursos.Size = new System.Drawing.Size(167, 31);
-            this.cmbFiltroCursos.TabIndex = 4;
-            this.cmbFiltroCursos.SelectedIndexChanged += new System.EventHandler(this.cmbFiltroCursos_SelectedIndexChanged);
             // 
             // FrmCursosUser
             // 

@@ -83,6 +83,16 @@ namespace GUI.Properties {
         /// <summary>
         ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap bot {
+            get {
+                object obj = ResourceManager.GetObject("bot", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Captura_de_pantalla_2025_05_21_162820 {
             get {
                 object obj = ResourceManager.GetObject("Captura de pantalla 2025-05-21 162820", resourceCulture);
@@ -136,6 +146,16 @@ namespace GUI.Properties {
         internal static System.Drawing.Bitmap ojo1 {
             get {
                 object obj = ResourceManager.GetObject("ojo1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap qr {
+            get {
+                object obj = ResourceManager.GetObject("qr", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

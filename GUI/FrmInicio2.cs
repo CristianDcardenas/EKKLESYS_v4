@@ -666,7 +666,8 @@ namespace GUI
 
         private void btnComenzarAhora_Click(object sender, EventArgs e)
         {
-            SetActiveTab(tabCursos);
+            var frmQr = new FrmQr();
+            frmQr.ShowDialog();
         }
 
         private void btnConocerMas_Click(object sender, EventArgs e)

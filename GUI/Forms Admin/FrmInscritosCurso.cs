@@ -21,14 +21,17 @@ namespace GUI
             InitializeComponent();
             cursoService = new CursoService();
             this.idCurso = idCurso;
+            // Configurar el evento KeyDown para el TextBox
+            txtBusqueda.KeyDown += TxtBusqueda_KeyDown;
             CargarDatos();
         }
 
         public FrmInscritosCurso()
         {
+            InitializeComponent();
         }
 
-        private void CargarDatos()
+        private void CargarDatos(string filtro = null)
         {
             var curso = cursoService.BuscarPorId(idCurso);
             if (curso != null)
@@ -37,9 +40,19 @@ namespace GUI
                 lblCapacidad.Text = $"Capacidad: {curso.NumeroInscritos} / {curso.capacidad_max_curso}";
 
                 dgvInscritos.Rows.Clear();
-                foreach (var estudiante in curso.Estudiantes)
+                var estudiantesFiltrados = string.IsNullOrWhiteSpace(filtro)
+                    ? curso.Estudiantes
+                    : curso.Estudiantes.Where(e => e.NombreCompleto.ToLower().Contains(filtro.ToLower())).ToList();
+
+                foreach (var estudiante in estudiantesFiltrados)
                 {
                     dgvInscritos.Rows.Add(estudiante.id_usuario, estudiante.NombreCompleto, estudiante.email, estudiante.telefono);
+                }
+
+                // Limpiar el TextBox después de la búsqueda
+                if (!string.IsNullOrWhiteSpace(filtro))
+                {
+                    txtBusqueda.Text = string.Empty;
                 }
             }
         }
@@ -47,6 +60,28 @@ namespace GUI
         private void btnCerrar_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void btnBuscar_Click(object sender, EventArgs e)
+        {
+            string filtro = txtBusqueda.Text.Trim();
+            CargarDatos(filtro);
+        }
+
+        private void btnLimpiar_Click(object sender, EventArgs e)
+        {
+            txtBusqueda.Text = string.Empty;
+            CargarDatos();
+        }
+
+        private void TxtBusqueda_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter || e.KeyCode == Keys.Return)
+            {
+                e.SuppressKeyPress = true; // Evita el sonido del Enter
+                string filtro = txtBusqueda.Text.Trim();
+                CargarDatos(filtro);
+            }
         }
     }
 }

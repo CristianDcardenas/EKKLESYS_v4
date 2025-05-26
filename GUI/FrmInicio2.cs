@@ -17,6 +17,7 @@ namespace GUI
         private readonly EventoService eventoService;
         private List<EventoDTO> eventos;
         private readonly TelegramBotService _botService;
+        private ReminderSchedulerService reminderService;
 
         public FrmInicio2()
         {
@@ -33,6 +34,8 @@ namespace GUI
         private async void FrmInicio2Closing(object sender, FormClosingEventArgs e)
         {
             await _botService.StopBotAsync();
+            // Detener el servicio al cerrar la aplicación
+            reminderService?.DetenerServicio();
         }
 
         private void ConfigureTabControl()
@@ -714,6 +717,19 @@ namespace GUI
             {
                 MessageBox.Show($"Error al iniciar el bot: {ex.Message}");
             }
+
+            // Iniciar el servicio de recordatorios automáticos
+            reminderService = new ReminderSchedulerService();
+            reminderService.IniciarServicio();
+        }
+        private void btnEnviarRecordatorios_Click(object sender, EventArgs e)
+        {
+            //var emailService = new EmailNotificationService();
+            //emailService.TestearEnvioCorreo();
+            var emailService = new EmailNotificationService();
+            string resultado = emailService.TestearEnvioCorreo();
+            MessageBox.Show(resultado, "Resultado Test");
+
         }
     }
 }

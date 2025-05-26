@@ -39,6 +39,7 @@
       <HintPath>..\packages\System.ComponentModel.Annotations.5.0.0\lib\net461\System.ComponentModel.Annotations.dll</HintPath>
     </Reference>
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.1.0\lib\net462\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
@@ -57,21 +58,24 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AuthenticationService.cs" />
-    <Compile Include="BaseBotController.cs" />
+    <Compile Include="Bot\AuthenticationService.cs" />
+    <Compile Include="Bot\BaseBotController.cs" />
     <Compile Include="ComunaService.cs" />
-    <Compile Include="CursoBotController.cs" />
+    <Compile Include="Bot\CursoBotController.cs" />
     <Compile Include="CursoService.cs" />
-    <Compile Include="EventoBotController.cs" />
+    <Compile Include="Correo\EmailNotificationService.cs" />
+    <Compile Include="Correo\EmailService.cs" />
+    <Compile Include="Bot\EventoBotController.cs" />
     <Compile Include="EventoService.cs" />
-    <Compile Include="IBotController.cs" />
-    <Compile Include="IRegistrationService.cs" />
+    <Compile Include="Bot\IBotController.cs" />
+    <Compile Include="Bot\IRegistrationService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RegistrationService.cs" />
-    <Compile Include="TelegramBotService.cs" />
-    <Compile Include="TelegramCursoView.cs" />
-    <Compile Include="UserState.cs" />
-    <Compile Include="UserStateType.cs" />
+    <Compile Include="Bot\RegistrationService.cs" />
+    <Compile Include="Correo\ReminderSchedulerService.cs" />
+    <Compile Include="Bot\TelegramBotService.cs" />
+    <Compile Include="Bot\TelegramCursoView.cs" />
+    <Compile Include="Bot\UserState.cs" />
+    <Compile Include="Bot\UserStateType.cs" />
     <Compile Include="UsuarioService.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -88,5 +92,6 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

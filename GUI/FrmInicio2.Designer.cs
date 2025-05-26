@@ -47,6 +47,7 @@ namespace GUI
             this.tabInicio = new System.Windows.Forms.TabPage();
             this.panelBienvenida = new System.Windows.Forms.Panel();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.btnComenzarAhora = new FontAwesome.Sharp.IconButton();
             this.lblBienvenida = new System.Windows.Forms.Label();
             this.lblDescripcionBienvenida = new System.Windows.Forms.Label();
             this.pictureBoxDashboard = new System.Windows.Forms.PictureBox();
@@ -81,7 +82,7 @@ namespace GUI
             this.linkTerminos = new System.Windows.Forms.LinkLabel();
             this.lblCopyright = new System.Windows.Forms.Label();
             this.lblFooterLogo = new System.Windows.Forms.Label();
-            this.btnComenzarAhora = new FontAwesome.Sharp.IconButton();
+            this.btnEnviarRecordatorios = new FontAwesome.Sharp.IconButton();
             this.panelHeader.SuspendLayout();
             this.panelNavigation.SuspendLayout();
             this.tabControlMain.SuspendLayout();
@@ -261,7 +262,7 @@ namespace GUI
             this.tabInicio.Controls.Add(this.panelBienvenida);
             this.tabInicio.Location = new System.Drawing.Point(4, 5);
             this.tabInicio.Name = "tabInicio";
-            this.tabInicio.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.tabInicio.Padding = new System.Windows.Forms.Padding(3);
             this.tabInicio.Size = new System.Drawing.Size(1016, 450);
             this.tabInicio.TabIndex = 0;
             this.tabInicio.Text = "Inicio";
@@ -270,6 +271,7 @@ namespace GUI
             // panelBienvenida
             // 
             this.panelBienvenida.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(43)))), ((int)(((byte)(94)))));
+            this.panelBienvenida.Controls.Add(this.btnEnviarRecordatorios);
             this.panelBienvenida.Controls.Add(this.panel1);
             this.panelBienvenida.Controls.Add(this.pictureBoxDashboard);
             this.panelBienvenida.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -287,6 +289,25 @@ namespace GUI
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(434, 231);
             this.panel1.TabIndex = 5;
+            // 
+            // btnComenzarAhora
+            // 
+            this.btnComenzarAhora.BackColor = System.Drawing.Color.White;
+            this.btnComenzarAhora.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnComenzarAhora.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnComenzarAhora.IconChar = FontAwesome.Sharp.IconChar.Telegram;
+            this.btnComenzarAhora.IconColor = System.Drawing.Color.DodgerBlue;
+            this.btnComenzarAhora.IconFont = FontAwesome.Sharp.IconFont.Auto;
+            this.btnComenzarAhora.IconSize = 40;
+            this.btnComenzarAhora.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnComenzarAhora.Location = new System.Drawing.Point(124, 157);
+            this.btnComenzarAhora.Name = "btnComenzarAhora";
+            this.btnComenzarAhora.Size = new System.Drawing.Size(159, 48);
+            this.btnComenzarAhora.TabIndex = 4;
+            this.btnComenzarAhora.Text = "Comenzar Ahora";
+            this.btnComenzarAhora.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.btnComenzarAhora.UseVisualStyleBackColor = false;
+            this.btnComenzarAhora.Click += new System.EventHandler(this.btnComenzarAhora_Click);
             // 
             // lblBienvenida
             // 
@@ -316,7 +337,7 @@ namespace GUI
             this.pictureBoxDashboard.BackColor = System.Drawing.Color.White;
             this.pictureBoxDashboard.Dock = System.Windows.Forms.DockStyle.Right;
             this.pictureBoxDashboard.Image = ((System.Drawing.Image)(resources.GetObject("pictureBoxDashboard.Image")));
-            this.pictureBoxDashboard.Location = new System.Drawing.Point(208, 0);
+            this.pictureBoxDashboard.Location = new System.Drawing.Point(154, 0);
             this.pictureBoxDashboard.Margin = new System.Windows.Forms.Padding(4);
             this.pictureBoxDashboard.Name = "pictureBoxDashboard";
             this.pictureBoxDashboard.Size = new System.Drawing.Size(856, 444);
@@ -329,8 +350,8 @@ namespace GUI
             this.tabCursos.Controls.Add(this.flpCursos);
             this.tabCursos.Location = new System.Drawing.Point(4, 5);
             this.tabCursos.Name = "tabCursos";
-            this.tabCursos.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
-            this.tabCursos.Size = new System.Drawing.Size(1016, 509);
+            this.tabCursos.Padding = new System.Windows.Forms.Padding(3);
+            this.tabCursos.Size = new System.Drawing.Size(1016, 450);
             this.tabCursos.TabIndex = 1;
             this.tabCursos.Text = "Cursos";
             this.tabCursos.UseVisualStyleBackColor = true;
@@ -341,8 +362,8 @@ namespace GUI
             this.flpCursos.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flpCursos.Location = new System.Drawing.Point(3, 3);
             this.flpCursos.Name = "flpCursos";
-            this.flpCursos.Padding = new System.Windows.Forms.Padding(10, 10, 10, 10);
-            this.flpCursos.Size = new System.Drawing.Size(1010, 503);
+            this.flpCursos.Padding = new System.Windows.Forms.Padding(10);
+            this.flpCursos.Size = new System.Drawing.Size(1010, 444);
             this.flpCursos.TabIndex = 0;
             // 
             // tabEventos
@@ -350,8 +371,8 @@ namespace GUI
             this.tabEventos.Controls.Add(this.flpEventos);
             this.tabEventos.Location = new System.Drawing.Point(4, 5);
             this.tabEventos.Name = "tabEventos";
-            this.tabEventos.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
-            this.tabEventos.Size = new System.Drawing.Size(1016, 509);
+            this.tabEventos.Padding = new System.Windows.Forms.Padding(3);
+            this.tabEventos.Size = new System.Drawing.Size(1016, 450);
             this.tabEventos.TabIndex = 2;
             this.tabEventos.Text = "Eventos";
             this.tabEventos.UseVisualStyleBackColor = true;
@@ -362,8 +383,8 @@ namespace GUI
             this.flpEventos.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flpEventos.Location = new System.Drawing.Point(3, 3);
             this.flpEventos.Name = "flpEventos";
-            this.flpEventos.Padding = new System.Windows.Forms.Padding(10, 10, 10, 10);
-            this.flpEventos.Size = new System.Drawing.Size(1010, 503);
+            this.flpEventos.Padding = new System.Windows.Forms.Padding(10);
+            this.flpEventos.Size = new System.Drawing.Size(1010, 444);
             this.flpEventos.TabIndex = 0;
             // 
             // tabContacto
@@ -373,8 +394,8 @@ namespace GUI
             this.tabContacto.Controls.Add(this.lblDescripcionContacto);
             this.tabContacto.Location = new System.Drawing.Point(4, 5);
             this.tabContacto.Name = "tabContacto";
-            this.tabContacto.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
-            this.tabContacto.Size = new System.Drawing.Size(1016, 509);
+            this.tabContacto.Padding = new System.Windows.Forms.Padding(3);
+            this.tabContacto.Size = new System.Drawing.Size(1016, 450);
             this.tabContacto.TabIndex = 4;
             this.tabContacto.Text = "Contacto";
             this.tabContacto.UseVisualStyleBackColor = true;
@@ -409,7 +430,7 @@ namespace GUI
             this.panelInfoContacto.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelInfoContacto.Location = new System.Drawing.Point(3, 3);
             this.panelInfoContacto.Name = "panelInfoContacto";
-            this.panelInfoContacto.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
+            this.panelInfoContacto.Padding = new System.Windows.Forms.Padding(20);
             this.panelInfoContacto.Size = new System.Drawing.Size(384, 366);
             this.panelInfoContacto.TabIndex = 0;
             // 
@@ -492,7 +513,7 @@ namespace GUI
             this.panelFormContacto.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelFormContacto.Location = new System.Drawing.Point(393, 3);
             this.panelFormContacto.Name = "panelFormContacto";
-            this.panelFormContacto.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
+            this.panelFormContacto.Padding = new System.Windows.Forms.Padding(20);
             this.panelFormContacto.Size = new System.Drawing.Size(580, 366);
             this.panelFormContacto.TabIndex = 1;
             // 
@@ -690,24 +711,19 @@ namespace GUI
             this.lblFooterLogo.TabIndex = 0;
             this.lblFooterLogo.Text = "EKKLESYS";
             // 
-            // btnComenzarAhora
+            // btnEnviarRecordatorios
             // 
-            this.btnComenzarAhora.BackColor = System.Drawing.Color.White;
-            this.btnComenzarAhora.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btnComenzarAhora.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnComenzarAhora.IconChar = FontAwesome.Sharp.IconChar.Telegram;
-            this.btnComenzarAhora.IconColor = System.Drawing.Color.DodgerBlue;
-            this.btnComenzarAhora.IconFont = FontAwesome.Sharp.IconFont.Auto;
-            this.btnComenzarAhora.IconSize = 40;
-            this.btnComenzarAhora.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnComenzarAhora.Location = new System.Drawing.Point(124, 157);
-            this.btnComenzarAhora.Name = "btnComenzarAhora";
-            this.btnComenzarAhora.Size = new System.Drawing.Size(159, 48);
-            this.btnComenzarAhora.TabIndex = 4;
-            this.btnComenzarAhora.Text = "Comenzar Ahora";
-            this.btnComenzarAhora.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.btnComenzarAhora.UseVisualStyleBackColor = false;
-            this.btnComenzarAhora.Click += new System.EventHandler(this.btnComenzarAhora_Click);
+            this.btnEnviarRecordatorios.BackColor = System.Drawing.Color.White;
+            this.btnEnviarRecordatorios.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnEnviarRecordatorios.IconChar = FontAwesome.Sharp.IconChar.Envelope;
+            this.btnEnviarRecordatorios.IconColor = System.Drawing.Color.Black;
+            this.btnEnviarRecordatorios.IconFont = FontAwesome.Sharp.IconFont.Auto;
+            this.btnEnviarRecordatorios.Location = new System.Drawing.Point(27, 383);
+            this.btnEnviarRecordatorios.Name = "btnEnviarRecordatorios";
+            this.btnEnviarRecordatorios.Size = new System.Drawing.Size(66, 48);
+            this.btnEnviarRecordatorios.TabIndex = 6;
+            this.btnEnviarRecordatorios.UseVisualStyleBackColor = false;
+            this.btnEnviarRecordatorios.Click += new System.EventHandler(this.btnEnviarRecordatorios_Click);
             // 
             // FrmInicio2
             // 
@@ -798,5 +814,6 @@ namespace GUI
         private System.Windows.Forms.LinkLabel linkAyuda;
         private Panel panel1;
         private FontAwesome.Sharp.IconButton btnComenzarAhora;
+        private FontAwesome.Sharp.IconButton btnEnviarRecordatorios;
     }
 }

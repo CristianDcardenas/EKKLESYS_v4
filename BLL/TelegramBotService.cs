@@ -1,4 +1,6 @@
-﻿using DAL;
+﻿using BLL.Interfaces;
+using BLL.Services;
+using DAL;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -16,6 +18,8 @@ namespace BLL
     {
         private CursoBotController _cursoController;
         private EventoBotController _eventoController;
+        private IRegistrationService _registrationService;
+        private AuthenticationService _authenticationService;
         private readonly CursoService _cursoService;
         private readonly EventoService _eventoService;
         private readonly UsuarioRepository _usuarioRepository;
@@ -24,12 +28,13 @@ namespace BLL
         private readonly TelegramBotClient _botClient;
         private CancellationTokenSource _cts;
 
+        // Estado compartido entre controladores
+        private readonly Dictionary<long, UserState> _sharedUserStates;
+
         public TelegramBotService()
         {
-            // Usa tu token aquí (considera moverlo a configuración)
             _botClient = new TelegramBotClient("7829823993:AAG7rxd3rqkJV1CpBdNSJZHLYD0yfC0Bwo4");
 
-            // Inicializar servicios y repositorios
             var connectionManager = new ConnectionManager();
             _cursoService = new CursoService();
             _eventoService = new EventoService();
@@ -37,9 +42,16 @@ namespace BLL
             _inscripcionRepository = new InscripcionCursoRepository(connectionManager, _usuarioRepository);
             _asistenciaRepository = new AsistenciaEventoRepository(connectionManager, _usuarioRepository);
 
-            // Inicializar los controladores con todas las dependencias
-            _cursoController = new CursoBotController(_botClient, _cursoService, _usuarioRepository, _inscripcionRepository);
-            _eventoController = new EventoBotController(_botClient, _eventoService, _usuarioRepository, _asistenciaRepository);
+            // Estado compartido
+            _sharedUserStates = new Dictionary<long, UserState>();
+
+            // Inicializar servicios
+            _registrationService = new RegistrationService(_botClient, _usuarioRepository, _sharedUserStates);
+            _authenticationService = new AuthenticationService(_botClient, _usuarioRepository, _sharedUserStates);
+
+            // Inicializar controladores con estado compartido
+            _cursoController = new CursoBotController(_botClient, _cursoService, _usuarioRepository, _inscripcionRepository, _sharedUserStates);
+            _eventoController = new EventoBotController(_botClient, _eventoService, _usuarioRepository, _asistenciaRepository, _sharedUserStates);
         }
 
         public async Task StartBotAsync()
@@ -48,10 +60,9 @@ namespace BLL
 
             var receiverOptions = new ReceiverOptions
             {
-                AllowedUpdates = new UpdateType[] { } // Forma compatible con C# 7.3
+                AllowedUpdates = new UpdateType[] { }
             };
 
-            // Inicia el bot (versión compatible)
             _botClient.StartReceiving(
                 HandleUpdateAsync,
                 HandleErrorAsync,
@@ -59,7 +70,6 @@ namespace BLL
                 _cts.Token
             );
 
-            // Obtiene información del bot
             var me = await _botClient.GetMeAsync();
             Console.WriteLine("Bot iniciado: @" + me.Username);
         }
@@ -80,19 +90,65 @@ namespace BLL
                 var text = update.Message.Text.Trim().ToLower();
                 var chatId = update.Message.Chat.Id;
 
-                // Verificar si el usuario está en proceso de inscripción o asistencia
-                if (_cursoController.IsAwaitingPhoneNumber(chatId))
+                // Verificar si está en proceso de registro
+                if (_registrationService.EstaEnProcesoRegistro(chatId))
                 {
-                    await _cursoController.HandleMessageAsync(update.Message, cancellationToken);
-                    return;
-                }
-                else if (_eventoController.IsAwaitingPhoneNumber(chatId))
-                {
-                    await _eventoController.HandleMessageAsync(update.Message, cancellationToken);
+                    var registroExitoso = await _registrationService.ProcesarDatosRegistro(chatId, update.Message.Text);
+                    if (registroExitoso && _sharedUserStates.ContainsKey(chatId) &&
+                        _sharedUserStates[chatId].RegistrationStep == RegistrationStep.Completed)
+                    {
+                        await _registrationService.CompletarRegistro(chatId);
+                    }
                     return;
                 }
 
-                // Si el mensaje es /start o cualquier otro comando, mostrar el menú principal
+                // Verificar si está en proceso de autenticación y delegar al controlador apropiado
+                if (_authenticationService.EstaEnProcesoAutenticacion(chatId))
+                {
+                    var state = _sharedUserStates[chatId];
+                    switch (state.OriginalAction)
+                    {
+                        case "inscribirse":
+                        case "cancelar_inscripcion":
+                        case "consultar_inscripciones":
+                            await _cursoController.HandleMessageAsync(update.Message, cancellationToken);
+                            break;
+
+                        case "registrarse":
+                        case "cancelar_registro":
+                        case "consultar_registros":
+                            await _eventoController.HandleMessageAsync(update.Message, cancellationToken);
+                            break;
+
+                        default:
+                            // Si no reconoce la acción, enviar al menú principal
+                            await ShowMainMenu(chatId, cancellationToken);
+                            break;
+                    }
+                    return;
+                }
+
+                // Verificar si hay algún estado activo para este usuario
+                if (_sharedUserStates.ContainsKey(chatId))
+                {
+                    var userState = _sharedUserStates[chatId];
+
+                    // Manejar estados relacionados con cursos
+                    if (userState.StateType == UserStateType.Curso)
+                    {
+                        await _cursoController.HandleMessageAsync(update.Message, cancellationToken);
+                        return;
+                    }
+
+                    // Manejar estados relacionados con eventos
+                    if (userState.StateType == UserStateType.Evento)
+                    {
+                        await _eventoController.HandleMessageAsync(update.Message, cancellationToken);
+                        return;
+                    }
+                }
+
+                // Mostrar menú principal para cualquier mensaje sin estado
                 await ShowMainMenu(chatId, cancellationToken);
             }
             else if (update.CallbackQuery != null)
@@ -101,41 +157,66 @@ namespace BLL
                 var chatId = update.CallbackQuery.Message.Chat.Id;
 
                 // Manejar acciones del menú principal
-                if (action == "menu_cursos")
+                switch (action)
                 {
-                    await _cursoController.MostrarCursos(chatId);
-                    await _botClient.AnswerCallbackQueryAsync(update.CallbackQuery.Id);
-                }
-                else if (action == "menu_eventos")
-                {
-                    await _eventoController.MostrarEventos(chatId);
-                    await _botClient.AnswerCallbackQueryAsync(update.CallbackQuery.Id);
-                }
-                else if (action == "menu_ayuda")
-                {
-                    await MostrarAyuda(chatId);
-                    await _botClient.AnswerCallbackQueryAsync(update.CallbackQuery.Id);
-                }
-                else if (action == "menu_principal")
-                {
-                    await ShowMainMenu(chatId, cancellationToken);
-                    await _botClient.AnswerCallbackQueryAsync(update.CallbackQuery.Id);
-                }
-                // Manejar acciones específicas de cursos y eventos
-                else if (action == "verevento" || action == "asistir" || action == "volvereventos")
-                {
-                    await _eventoController.HandleCallbackAsync(update.CallbackQuery);
-                }
-                else
-                {
-                    await _cursoController.HandleCallbackAsync(update.CallbackQuery);
+                    case "menu_cursos":
+                        await _cursoController.MostrarItems(chatId);
+                        await _botClient.AnswerCallbackQueryAsync(update.CallbackQuery.Id);
+                        break;
+
+                    case "menu_eventos":
+                        await _eventoController.MostrarItems(chatId);
+                        await _botClient.AnswerCallbackQueryAsync(update.CallbackQuery.Id);
+                        break;
+
+                    case "menu_registro":
+                        await _registrationService.IniciarRegistro(chatId);
+                        await _botClient.AnswerCallbackQueryAsync(update.CallbackQuery.Id);
+                        break;
+
+                    case "iniciar_registro":
+                        await _registrationService.IniciarRegistro(chatId);
+                        await _botClient.AnswerCallbackQueryAsync(update.CallbackQuery.Id);
+                        break;
+
+                    case "menu_ayuda":
+                        await MostrarAyuda(chatId);
+                        await _botClient.AnswerCallbackQueryAsync(update.CallbackQuery.Id);
+                        break;
+
+                    case "menu_principal":
+                        await ShowMainMenu(chatId, cancellationToken);
+                        await _botClient.AnswerCallbackQueryAsync(update.CallbackQuery.Id);
+                        break;
+
+                    // Manejar acciones específicas de eventos
+                    case "verevento":
+                    case "registrarse":
+                    case "volvereventos":
+                    case "cancelar_registro":
+                    case "mis_inscripciones_eventos":
+                        await _eventoController.HandleCallbackAsync(update.CallbackQuery);
+                        break;
+
+                    // Manejar acciones específicas de cursos
+                    case "vercurso":
+                    case "inscribirse":
+                    case "volvercursos":
+                    case "cancelar_inscripcion":
+                    case "mis_inscripciones_cursos":
+                        await _cursoController.HandleCallbackAsync(update.CallbackQuery);
+                        break;
+
+                    // Cualquier otra acción va a cursos por defecto
+                    default:
+                        await _cursoController.HandleCallbackAsync(update.CallbackQuery);
+                        break;
                 }
             }
         }
 
         private async Task ShowMainMenu(long chatId, CancellationToken cancellationToken)
         {
-            // Crear botones para el menú principal
             var inlineKeyboard = new List<InlineKeyboardButton[]>();
 
             inlineKeyboard.Add(new[] {
@@ -144,6 +225,10 @@ namespace BLL
 
             inlineKeyboard.Add(new[] {
                 InlineKeyboardButton.WithCallbackData("📅 Ver Eventos", "menu_eventos")
+            });
+
+            inlineKeyboard.Add(new[] {
+                InlineKeyboardButton.WithCallbackData("📝 Registrarse", "menu_registro")
             });
 
             inlineKeyboard.Add(new[] {
@@ -167,10 +252,12 @@ namespace BLL
             var mensaje = "❓ *Ayuda*\n\n" +
                           "Este bot te permite:\n\n" +
                           "📚 *Ver Cursos*: Explora los cursos disponibles e inscríbete.\n\n" +
-                          "📅 *Ver Eventos*: Descubre los próximos eventos y registra tu asistencia.\n\n" +
-                          "Para inscribirte a un curso o asistir a un evento, necesitarás proporcionar tu número de teléfono para verificar tu registro en nuestra plataforma.";
+                          "📅 *Ver Eventos*: Descubre los próximos eventos y regístrate.\n\n" +
+                          "📝 *Registrarse*: Crea tu cuenta con nombre, apellido, teléfono y correo electrónico.\n\n" +
+                          "📋 *Consultar Inscripciones*: Ve tus cursos y eventos registrados.\n\n" +
+                          "❌ *Cancelar Inscripciones*: Cancela tu participación en cursos o eventos.\n\n" +
+                          "🔐 *Seguridad*: Para acceder a las funciones necesitarás tu teléfono y correo electrónico.";
 
-            // Agregar botón para volver al menú principal
             var inlineKeyboard = new List<InlineKeyboardButton[]>();
             inlineKeyboard.Add(new[] {
                 InlineKeyboardButton.WithCallbackData("🔙 Volver al Menú Principal", "menu_principal")
@@ -190,9 +277,8 @@ namespace BLL
         {
             string errorMessage;
 
-            if (exception is ApiRequestException)
+            if (exception is ApiRequestException apiRequestException)
             {
-                ApiRequestException apiRequestException = (ApiRequestException)exception;
                 errorMessage = "Error de la API de Telegram:\n[" + apiRequestException.ErrorCode + "]\n" + apiRequestException.Message;
             }
             else

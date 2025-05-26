@@ -16,6 +16,7 @@ namespace ENTITY
         public int capacidad_max_curso { get; set; }
         public List<Usuario> Estudiantes { get; set; }
         public string ruta_imagen_curso { get; set; }
+        public int id_administrador { get; set; }
 
         public Curso()
         {

@@ -43,6 +43,28 @@ namespace BLL
             }
         }
 
+        public string GuardarCursoComoAdmin(Evento evento, int idUsuario)
+        {
+            try
+            {
+                // Validar fechas
+                if (evento.fecha_inicio_evento > evento.fecha_fin_evento)
+                {
+                    return "Error al guardar: La fecha de inicio no puede ser posterior a la fecha de fin";
+                }
+
+                // Obtener el id_administrador real desde la tabla ADMINISTRADORES
+                int idAdministrador = eventoRepository.ObtenerIdAdministradorPorUsuario(idUsuario);
+                evento.id_administrador = idAdministrador;
+
+                eventoRepository.Guardar(evento);
+                return $"Curso {evento.nombre_evento} guardado exitosamente";
+            }
+            catch (Exception ex)
+            {
+                return $"Error al guardar: {ex.Message}";
+            }
+        }
         public string Modificar(Evento evento)
         {
             try
@@ -87,6 +109,12 @@ namespace BLL
             {
                 return $"Error al eliminar: {ex.Message}";
             }
+        }
+
+
+        public int ObtenerIdAdministradorPorUsuario(int idUsuario)
+        {
+            return eventoRepository.ObtenerIdAdministradorPorUsuario(idUsuario);
         }
 
         public Evento BuscarPorId(int idEvento)

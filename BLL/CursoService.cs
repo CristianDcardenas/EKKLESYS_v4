@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using DAL;
 using ENTITY;
 
+
 namespace BLL
 {
     public class CursoService
@@ -44,6 +45,34 @@ namespace BLL
             }
         }
 
+        public string GuardarCursoComoAdmin(Curso curso, int idUsuario)
+        {
+            try
+            {
+                // Validar fechas
+                if (curso.fecha_inicio_curso > curso.fecha_fin_curso)
+                {
+                    return "Error al guardar: La fecha de inicio no puede ser posterior a la fecha de fin";
+                }
+
+                // Obtener el id_administrador real desde la tabla ADMINISTRADORES
+                int idAdministrador = cursoRepository.ObtenerIdAdministradorPorUsuario(idUsuario);
+                curso.id_administrador = idAdministrador;
+
+                cursoRepository.Guardar(curso);
+                return $"Curso {curso.nombre_curso} guardado exitosamente";
+            }
+            catch (Exception ex)
+            {
+                return $"Error al guardar: {ex.Message}";
+            }
+        }
+
+        public int ObtenerIdAdministradorPorUsuario(int idUsuario)
+        {
+            return cursoRepository.ObtenerIdAdministradorPorUsuario(idUsuario);
+        }
+
         public string Modificar(Curso curso)
         {
             try
@@ -70,6 +99,7 @@ namespace BLL
             }
         }
 
+        
         public string Eliminar(int idCurso)
         {
             try
@@ -90,6 +120,7 @@ namespace BLL
             }
         }
 
+        
         public Curso BuscarPorId(int idCurso)
         {
             var curso = cursoRepository.BuscarPorId(idCurso);

@@ -58,10 +58,13 @@ namespace GUI
                         fecha_inicio_evento = dtpFechaInicio.Value,
                         fecha_fin_evento = dtpFechaFin.Value,
                         capacidad_max_evento = (int)nudCapacidad.Value,
-                        ruta_imagen_evento = rutaImagenGuardada
+                        ruta_imagen_evento = rutaImagenGuardada,
+                        
                     };
+                    string resultado = eventoService.GuardarCursoComoAdmin(evento, Session.CurrentUser.id_usuario);
 
-                    string resultado = eventoService.Guardar(evento);
+
+                    //string resultado = eventoService.Guardar(evento);
                     MessageBox.Show(resultado, "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                     if (!resultado.StartsWith("Error"))

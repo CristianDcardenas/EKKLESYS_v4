@@ -18,7 +18,7 @@ namespace ENTITY
         public List<Usuario> Asistentes { get; set; }
 
         public string ruta_imagen_evento { get; set; }
-
+        public int id_administrador { get; set; }
         public Evento()
         {
             Asistentes = new List<Usuario>();

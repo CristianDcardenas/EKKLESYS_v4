@@ -29,9 +29,9 @@ namespace DAL
                 {
                     command.Connection = connection;
                     command.CommandText = @"INSERT INTO Eventos (nombre_evento, lugar_evento, descripcion_evento, 
-                                  fecha_inicio_evento, fecha_fin_evento, capacidad_max_evento, ruta_imagen_evento) 
+                                  fecha_inicio_evento, fecha_fin_evento, capacidad_max_evento, ruta_imagen_evento, id_administrador) 
                                   VALUES (:nombre_evento, :lugar_evento, :descripcion_evento, 
-                                  :fecha_inicio_evento, :fecha_fin_evento, :capacidad_max_evento, :ruta_imagen_evento)
+                                  :fecha_inicio_evento, :fecha_fin_evento, :capacidad_max_evento, :ruta_imagen_evento, :id_administrador)
                                   RETURNING id_evento INTO :id_evento";
 
                     command.Parameters.Add(":nombre_evento", OracleDbType.Varchar2).Value = evento.nombre_evento;
@@ -42,6 +42,7 @@ namespace DAL
                     command.Parameters.Add(":capacidad_max_evento", OracleDbType.Int32).Value = evento.capacidad_max_evento;
                     command.Parameters.Add(":ruta_imagen_evento", OracleDbType.Varchar2).Value =
                         string.IsNullOrEmpty(evento.ruta_imagen_evento) ? DBNull.Value : (object)evento.ruta_imagen_evento;
+                    command.Parameters.Add(":id_administrador", OracleDbType.Int32).Value = evento.id_administrador;
 
                     // Parámetro de salida para el ID generado
                     OracleParameter idParam = new OracleParameter(":id_evento", OracleDbType.Int32);
@@ -63,7 +64,25 @@ namespace DAL
             }
         }
 
+        public int ObtenerIdAdministradorPorUsuario(int idUsuario)
+        {
+            using (var connection = connectionManager.GetConnection())
+            {
+                connection.Open();
+                using (var command = new OracleCommand())
+                {
+                    command.Connection = connection;
+                    command.CommandText = "SELECT id_administrador FROM ADMINISTRADORES WHERE id_usuario = :id_usuario";
+                    command.Parameters.Add(":id_usuario", OracleDbType.Int32).Value = idUsuario;
 
+                    var result = command.ExecuteScalar();
+                    if (result != null && result != DBNull.Value)
+                        return Convert.ToInt32(result);
+                    else
+                        throw new Exception("El usuario no es un administrador registrado.");
+                }
+            }
+        }
 
         public void Modificar(Evento evento)
         {
@@ -223,7 +242,9 @@ namespace DAL
                 fecha_inicio_evento = Convert.ToDateTime(reader["fecha_inicio_evento"]),
                 fecha_fin_evento = Convert.ToDateTime(reader["fecha_fin_evento"]),
                 capacidad_max_evento = Convert.ToInt32(reader["capacidad_max_evento"]),
-                ruta_imagen_evento = reader["ruta_imagen_evento"] != DBNull.Value ? reader["ruta_imagen_evento"].ToString() : null
+                ruta_imagen_evento = reader["ruta_imagen_evento"] != DBNull.Value ? reader["ruta_imagen_evento"].ToString() : null,
+                id_administrador = reader["id_administrador"] != DBNull.Value ? Convert.ToInt32(reader["id_administrador"]) : 0 
+
             };
         }
 

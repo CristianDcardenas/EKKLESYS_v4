@@ -56,10 +56,12 @@ namespace GUI
                         fecha_inicio_curso = dtpFechaInicio.Value,
                         fecha_fin_curso = dtpFechaFin.Value,
                         capacidad_max_curso = (int)nudCapacidad.Value,
-                        ruta_imagen_curso = rutaImagenGuardada
+                        ruta_imagen_curso = rutaImagenGuardada,
+                       
                     };
+                    string resultado = cursoService.GuardarCursoComoAdmin(curso, Session.CurrentUser.id_usuario);
 
-                    string resultado = cursoService.Guardar(curso);
+                    //string resultado = cursoService.Guardar(curso);
                     MessageBox.Show(resultado, "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                     if (!resultado.StartsWith("Error"))

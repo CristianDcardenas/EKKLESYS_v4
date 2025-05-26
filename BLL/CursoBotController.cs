@@ -1,86 +1,95 @@
-﻿using DAL;
+﻿using BLL.Controllers;
+using BLL.Services;
+using DAL;
 using ENTITY;
-using Telegram.Bot;
-using Telegram.Bot.Types;
-using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types.ReplyMarkups;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Telegram.Bot;
+using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace BLL
 {
-    public class CursoBotController
+    public class CursoBotController : BaseBotController
     {
-        private readonly ITelegramBotClient _bot;
         private readonly CursoService _cursoService;
-        private readonly UsuarioRepository _usuarioRepository;
         private readonly InscripcionCursoRepository _inscripcionRepository;
-
-        // Diccionario para mantener el estado de la conversación con cada usuario
-        internal Dictionary<long, UserState> _userStates;
+        private readonly AuthenticationService _authService;
 
         public CursoBotController(ITelegramBotClient bot, CursoService cursoService,
-            UsuarioRepository usuarioRepository, InscripcionCursoRepository inscripcionRepository)
+            UsuarioRepository usuarioRepository, InscripcionCursoRepository inscripcionRepository,
+            Dictionary<long, UserState> userStates)
+            : base(bot, usuarioRepository, userStates)
         {
-            _bot = bot;
             _cursoService = cursoService;
-            _usuarioRepository = usuarioRepository;
             _inscripcionRepository = inscripcionRepository;
-            _userStates = new Dictionary<long, UserState>();
+            _authService = new AuthenticationService(bot, usuarioRepository, userStates);
         }
 
-        public async Task HandleMessageAsync(Message message, CancellationToken ct)
+        protected override UserStateType GetStateType() => UserStateType.Curso;
+        protected override string GetRetryAction() => "inscribirse";
+        protected override string GetCancelAction() => "vercurso";
+
+        public override async Task HandleMessageAsync(Message message, CancellationToken ct)
         {
             var chatId = message.Chat.Id;
-            var text = message.Text;
-            if (text != null)
-            {
-                text = text.Trim();
-            }
-            else
-            {
-                // Si el mensaje no tiene texto, ignorarlo
-                return;
-            }
+            var text = message.Text?.Trim();
 
-            // Verificar si el usuario está en proceso de inscripción
-            if (_userStates.ContainsKey(chatId) && _userStates[chatId].AwaitingPhoneNumber &&
-                _userStates[chatId].StateType == UserStateType.Curso)
+            if (string.IsNullOrEmpty(text)) return;
+
+            // Verificar si está en proceso de autenticación
+            if (_authService.EstaEnProcesoAutenticacion(chatId))
             {
-                // El usuario está en proceso de inscripción y estamos esperando su número de teléfono
-                await ProcessPhoneNumberInput(chatId, text, _userStates[chatId].ItemId, ct);
+                var authExitoso = await _authService.ProcesarDatosAutenticacion(chatId, text);
+                if (authExitoso && _userStates.ContainsKey(chatId) &&
+                    _userStates[chatId].AuthenticationStep == AuthenticationStep.Completed)
+                {
+                    var usuario = await _authService.ValidarCredenciales(chatId);
+                    if (usuario != null)
+                    {
+                        await ProcesarAccionPostAutenticacion(chatId, usuario, ct);
+                    }
+                }
                 return;
             }
 
             // Procesar comandos normales
             if (text.ToLower() == "/cursos")
             {
-                await MostrarCursos(chatId);
-            }
-            else if (text.ToLower() == "/start" || text.ToLower() == "/ayuda")
-            {
-                await _bot.SendTextMessageAsync(
-                    chatId,
-                    "Hola 👋 Bienvenido al bot de cursos y eventos.\n\n" +
-                    "Usa el comando /cursos para ver los cursos disponibles.\n" +
-                    "Usa el comando /eventos para ver los eventos próximos.",
-                    cancellationToken: ct
-                );
-            }
-            else if (text.ToLower() != "/eventos") // Evitar manejar el comando de eventos
-            {
-                await _bot.SendTextMessageAsync(
-                    chatId,
-                    "No entiendo ese comando. Usa /ayuda para ver los comandos disponibles.",
-                    cancellationToken: ct
-                );
+                await MostrarItems(chatId);
             }
         }
 
-        public async Task MostrarCursos(long chatId)
+        private async Task ProcesarAccionPostAutenticacion(long chatId, Usuario usuario, CancellationToken ct)
+        {
+            if (!_userStates.ContainsKey(chatId)) return;
+
+            var state = _userStates[chatId];
+            var accion = state.OriginalAction;
+            var itemId = state.ItemId;
+
+            // Limpiar estado de autenticación
+            _userStates.Remove(chatId);
+
+            switch (accion)
+            {
+                case "inscribirse":
+                    await ProcesarInscripcion(chatId, usuario, itemId, ct);
+                    break;
+                case "cancelar_inscripcion":
+                    await ProcesarCancelacionInscripcion(chatId, usuario, itemId, ct);
+                    break;
+                case "consultar_inscripciones":
+                    await MostrarInscripcionesDelUsuario(chatId, usuario);
+                    break;
+            }
+        }
+
+        public override async Task MostrarItems(long chatId)
         {
             var cursos = _cursoService.ConsultarDTO()
                 .Where(c => c.fecha_inicio_curso >= DateTime.Now && c.fecha_fin_curso >= DateTime.Now)
@@ -88,7 +97,6 @@ namespace BLL
 
             if (cursos.Count == 0)
             {
-                // Crear botón para volver al menú principal
                 var menuButtons = new List<InlineKeyboardButton[]>();
                 menuButtons.Add(new[] {
                     InlineKeyboardButton.WithCallbackData("🔙 Volver al Menú Principal", "menu_principal")
@@ -104,7 +112,6 @@ namespace BLL
                 return;
             }
 
-            // Crear una matriz de botones inline, con 1 curso por fila
             var inlineKeyboard = new List<InlineKeyboardButton[]>();
 
             foreach (var curso in cursos)
@@ -114,7 +121,11 @@ namespace BLL
                 });
             }
 
-            // Agregar botón para volver al menú principal
+            // Agregar opciones adicionales
+            inlineKeyboard.Add(new[] {
+                InlineKeyboardButton.WithCallbackData("📋 Mis Inscripciones", "mis_inscripciones_cursos")
+            });
+
             inlineKeyboard.Add(new[] {
                 InlineKeyboardButton.WithCallbackData("🔙 Volver al Menú Principal", "menu_principal")
             });
@@ -123,245 +134,204 @@ namespace BLL
 
             await _bot.SendTextMessageAsync(
                 chatId,
-                "📚 *Cursos disponibles*\n\nSelecciona un curso para ver más información:",
+                "📚 *Cursos disponibles*\n\nSelecciona una opción:",
                 parseMode: ParseMode.Markdown,
                 replyMarkup: replyMarkup
             );
         }
 
-        public async Task HandleCallbackAsync(CallbackQuery query)
+        public override async Task HandleCallbackAsync(CallbackQuery query)
         {
             var chatId = query.Message.Chat.Id;
             var data = query.Data.Split('|');
             var action = data[0];
             var id = data.Length > 1 ? data[1] : null;
 
-            if (action == "vercurso" && id != null)
+            switch (action)
             {
-                int cursoId;
-                if (int.TryParse(id, out cursoId))
-                {
-                    var curso = _cursoService.BuscarPorId(cursoId);
+                case "vercurso":
+                    if (id != null && int.TryParse(id, out int cursoId))
+                        await MostrarDetalleCurso(chatId, cursoId);
+                    break;
 
-                    if (curso != null)
-                    {
-                        var mensaje = "📖 *" + curso.nombre_curso + "*\n" +
-                                      "📝 " + curso.descripcion_curso + "\n" +
-                                      "📅 Del " + curso.fecha_inicio_curso.ToString("dd/MM/yyyy") + " al " + curso.fecha_fin_curso.ToString("dd/MM/yyyy") + "\n" +
-                                      "👥 Cupo: " + curso.NumeroInscritos + "/" + curso.capacidad_max_curso;
+                case "volvercursos":
+                    await MostrarItems(chatId);
+                    break;
 
-                        // Crear botones inline
-                        var detailButtons = new List<InlineKeyboardButton[]>();
+                case "inscribirse":
+                    if (id != null && int.TryParse(id, out int inscripcionId))
+                        await _authService.IniciarAutenticacion(chatId, "inscribirse", inscripcionId);
+                    break;
 
-                        // Botón de inscripción
-                        detailButtons.Add(new[] {
-                            InlineKeyboardButton.WithCallbackData("🟢 Inscribirse", "inscribirse|" + curso.id_curso)
-                        });
+                case "cancelar_inscripcion":
+                    if (id != null && int.TryParse(id, out int cancelId))
+                        await _authService.IniciarAutenticacion(chatId, "cancelar_inscripcion", cancelId);
+                    break;
 
-                        // Botón para volver a la lista de cursos
-                        detailButtons.Add(new[] {
-                            InlineKeyboardButton.WithCallbackData("🔙 Volver a cursos", "volvercursos")
-                        });
-
-                        // Botón para volver al menú principal
-                        detailButtons.Add(new[] {
-                            InlineKeyboardButton.WithCallbackData("🏠 Menú Principal", "menu_principal")
-                        });
-
-                        var detailMarkup = new InlineKeyboardMarkup(detailButtons);
-
-                        await _bot.SendTextMessageAsync(
-                            chatId,
-                            mensaje,
-                            parseMode: ParseMode.Markdown,
-                            replyMarkup: detailMarkup
-                        );
-                    }
-                }
-            }
-            else if (action == "volvercursos")
-            {
-                await MostrarCursos(chatId);
-            }
-            else if (action == "inscribirse" && id != null)
-            {
-                int cursoId;
-                if (int.TryParse(id, out cursoId))
-                {
-                    // Iniciar proceso de inscripción solicitando número de teléfono
-                    await SolicitarNumeroTelefono(chatId, cursoId);
-                }
+                case "mis_inscripciones_cursos":
+                    await _authService.IniciarAutenticacion(chatId, "consultar_inscripciones", 0);
+                    break;
             }
 
             await _bot.AnswerCallbackQueryAsync(query.Id);
         }
 
-        private async Task SolicitarNumeroTelefono(long chatId, int cursoId)
+        private async Task MostrarDetalleCurso(long chatId, int cursoId)
         {
-            // Verificar si hay cupo disponible
             var curso = _cursoService.BuscarPorId(cursoId);
-            if (curso.NumeroInscritos >= curso.capacidad_max_curso)
-            {
-                await _bot.SendTextMessageAsync(
-                    chatId,
-                    "❌ Lo sentimos, este curso ya no tiene cupos disponibles.",
-                    parseMode: ParseMode.Markdown
-                );
-                return;
-            }
+            if (curso == null) return;
 
-            // Guardar el estado del usuario (esperando número de teléfono para inscripción)
-            _userStates[chatId] = new UserState
-            {
-                ItemId = cursoId,
-                AwaitingPhoneNumber = true,
-                StateType = UserStateType.Curso
-            };
+            var mensaje = "📖 *" + curso.nombre_curso + "*\n" +
+                          "📝 " + curso.descripcion_curso + "\n" +
+                          "📅 Del " + curso.fecha_inicio_curso.ToString("dd/MM/yyyy") + " al " + curso.fecha_fin_curso.ToString("dd/MM/yyyy") + "\n" +
+                          "👥 Cupo: " + curso.NumeroInscritos + "/" + curso.capacidad_max_curso;
 
-            // Crear botones inline para cancelar
-            var cancelButtons = new List<InlineKeyboardButton[]>();
-            cancelButtons.Add(new[] {
-                InlineKeyboardButton.WithCallbackData("❌ Cancelar", "vercurso|" + cursoId)
+            var detailButtons = new List<InlineKeyboardButton[]>();
+
+            // Botón de inscripción
+            detailButtons.Add(new[] {
+                InlineKeyboardButton.WithCallbackData("🟢 Inscribirse", "inscribirse|" + curso.id_curso)
             });
 
-            var cancelMarkup = new InlineKeyboardMarkup(cancelButtons);
+            // Botón para cancelar inscripción
+            detailButtons.Add(new[] {
+                InlineKeyboardButton.WithCallbackData("❌ Cancelar Inscripción", "cancelar_inscripcion|" + curso.id_curso)
+            });
 
-            // Solicitar número de teléfono
-            var mensaje = "Para inscribirte en el curso *" + curso.nombre_curso + "*, por favor ingresa tu número de teléfono.\n\n" +
-                          "Ejemplo: 3001234567";
+            // Botón para volver a la lista de cursos
+            detailButtons.Add(new[] {
+                InlineKeyboardButton.WithCallbackData("🔙 Volver a cursos", "volvercursos")
+            });
+
+            // Botón para volver al menú principal
+            detailButtons.Add(new[] {
+                InlineKeyboardButton.WithCallbackData("🏠 Menú Principal", "menu_principal")
+            });
+
+            var detailMarkup = new InlineKeyboardMarkup(detailButtons);
 
             await _bot.SendTextMessageAsync(
                 chatId,
                 mensaje,
                 parseMode: ParseMode.Markdown,
-                replyMarkup: cancelMarkup
+                replyMarkup: detailMarkup
             );
         }
 
-        private async Task ProcessPhoneNumberInput(long chatId, string phoneNumber, int cursoId, CancellationToken ct)
+        protected override async Task MostrarInscripcionesDelUsuario(long chatId, Usuario usuario)
         {
-            // Limpiar el estado del usuario
-            _userStates.Remove(chatId);
+            var cursos = _inscripcionRepository.ConsultarCursosPorUsuario(usuario.id_usuario, new CursoRepository(new ConnectionManager()));
 
-            // Validar formato del número de teléfono (implementación básica)
-            phoneNumber = phoneNumber.Trim();
-            if (string.IsNullOrEmpty(phoneNumber) || phoneNumber.Length < 7)
+            if (cursos.Count == 0)
             {
-                // Crear botones inline para volver a intentar o cancelar
-                var errorButtons = new List<InlineKeyboardButton[]>();
-                errorButtons.Add(new[] {
-                    InlineKeyboardButton.WithCallbackData("🔄 Intentar nuevamente", "inscribirse|" + cursoId)
-                });
-                errorButtons.Add(new[] {
-                    InlineKeyboardButton.WithCallbackData("❌ Cancelar", "vercurso|" + cursoId)
-                });
-
-                var errorMarkup = new InlineKeyboardMarkup(errorButtons);
-
                 await _bot.SendTextMessageAsync(
                     chatId,
-                    "❌ El número de teléfono ingresado no es válido. Por favor, intenta nuevamente.",
+                    "📚 No tienes inscripciones en cursos actualmente.",
+                    parseMode: ParseMode.Markdown
+                );
+                return;
+            }
+
+            var mensaje = "📚 *Tus Cursos Inscritos*\n\n";
+            foreach (var curso in cursos)
+            {
+                mensaje += $"📖 {curso.nombre_curso}\n";
+                mensaje += $"📅 {curso.fecha_inicio_curso:dd/MM/yyyy} - {curso.fecha_fin_curso:dd/MM/yyyy}\n\n";
+            }
+
+            var backButtons = new List<InlineKeyboardButton[]>();
+            backButtons.Add(new[] {
+                InlineKeyboardButton.WithCallbackData("🔙 Volver a Cursos", "volvercursos")
+            });
+            backButtons.Add(new[] {
+                InlineKeyboardButton.WithCallbackData("🏠 Menú Principal", "menu_principal")
+            });
+
+            var backMarkup = new InlineKeyboardMarkup(backButtons);
+
+            await _bot.SendTextMessageAsync(
+                chatId,
+                mensaje,
+                parseMode: ParseMode.Markdown,
+                replyMarkup: backMarkup
+            );
+        }
+
+        private async Task ProcesarCancelacionInscripcion(long chatId, Usuario usuario, int cursoId, CancellationToken ct)
+        {
+            if (!_inscripcionRepository.ExisteInscripcion(usuario.id_usuario, cursoId))
+            {
+                await _bot.SendTextMessageAsync(
+                    chatId,
+                    "ℹ️ No tienes una inscripción activa en este curso.",
                     parseMode: ParseMode.Markdown,
-                    replyMarkup: errorMarkup,
                     cancellationToken: ct
                 );
                 return;
             }
 
-            // Buscar si el usuario existe en la base de datos
-            var usuario = _usuarioRepository.BuscarPorTelefono(phoneNumber);
-
-            if (usuario == null)
+            try
             {
-                // El usuario no existe, enviar mensaje para que se registre
-                var mensajeRegistro = "⚠️ No encontramos ningún usuario registrado con el número " + phoneNumber + ".\n\n" +
-                                     "Por favor, regístrate primero en nuestra plataforma antes de inscribirte a un curso.";
+                _inscripcionRepository.Eliminar(usuario.id_usuario, cursoId);
 
-                // Crear botones inline para volver
-                var notFoundButtons = new List<InlineKeyboardButton[]>();
-                notFoundButtons.Add(new[] {
-                    InlineKeyboardButton.WithCallbackData("🔙 Volver", "vercurso|" + cursoId)
-                });
-
-                var notFoundMarkup = new InlineKeyboardMarkup(notFoundButtons);
-
+                var curso = _cursoService.BuscarPorId(cursoId);
                 await _bot.SendTextMessageAsync(
                     chatId,
-                    mensajeRegistro,
+                    "✅ Tu inscripción al curso *" + curso.nombre_curso + "* ha sido cancelada exitosamente.",
                     parseMode: ParseMode.Markdown,
-                    replyMarkup: notFoundMarkup,
                     cancellationToken: ct
                 );
-                return;
             }
+            catch (Exception ex)
+            {
+                await _bot.SendTextMessageAsync(
+                    chatId,
+                    "❌ Error al cancelar la inscripción. Intenta nuevamente más tarde.",
+                    parseMode: ParseMode.Markdown,
+                    cancellationToken: ct
+                );
+                Console.WriteLine("Error al cancelar inscripción: " + ex.Message);
+            }
+        }
 
-            // Verificar si ya está inscrito en el curso
+        private async Task ProcesarInscripcion(long chatId, Usuario usuario, int cursoId, CancellationToken ct)
+        {
             if (_inscripcionRepository.ExisteInscripcion(usuario.id_usuario, cursoId))
             {
-                // Crear botones inline para volver
-                var existsButtons = new List<InlineKeyboardButton[]>();
-                existsButtons.Add(new[] {
-                    InlineKeyboardButton.WithCallbackData("🔙 Volver", "vercurso|" + cursoId)
-                });
-
-                var existsMarkup = new InlineKeyboardMarkup(existsButtons);
-
                 await _bot.SendTextMessageAsync(
                     chatId,
-                    "ℹ️ Ya estás inscrito en este curso con el número " + phoneNumber + ".",
+                    "ℹ️ Ya estás inscrito en este curso.",
                     parseMode: ParseMode.Markdown,
-                    replyMarkup: existsMarkup,
                     cancellationToken: ct
                 );
                 return;
             }
 
-            // Verificar si hay cupo disponible (verificación adicional por seguridad)
             var curso = _cursoService.BuscarPorId(cursoId);
             if (curso.NumeroInscritos >= curso.capacidad_max_curso)
             {
-                // Crear botones inline para volver
-                var noSpaceButtons = new List<InlineKeyboardButton[]>();
-                noSpaceButtons.Add(new[] {
-                    InlineKeyboardButton.WithCallbackData("🔙 Volver", "volvercursos")
-                });
-
-                var noSpaceMarkup = new InlineKeyboardMarkup(noSpaceButtons);
-
                 await _bot.SendTextMessageAsync(
                     chatId,
                     "❌ Lo sentimos, este curso ya no tiene cupos disponibles.",
                     parseMode: ParseMode.Markdown,
-                    replyMarkup: noSpaceMarkup,
                     cancellationToken: ct
                 );
                 return;
             }
 
-            // Realizar la inscripción
-            var inscripcion = new Inscripcion_curso();
-            inscripcion.id_usuario = usuario.id_usuario;
-            inscripcion.id_curso = cursoId;
-            inscripcion.fecha_inscripcion_curso = DateTime.Now;
+            var inscripcion = new Inscripcion_curso
+            {
+                id_usuario = usuario.id_usuario,
+                id_curso = cursoId,
+                fecha_inscripcion_curso = DateTime.Now
+            };
 
             try
             {
                 _inscripcionRepository.Guardar(inscripcion);
 
-                // Crear botones inline para volver
-                var successButtons = new List<InlineKeyboardButton[]>();
-                successButtons.Add(new[] {
-                    InlineKeyboardButton.WithCallbackData("🔙 Volver a cursos", "volvercursos")
-                });
-                successButtons.Add(new[] {
-                    InlineKeyboardButton.WithCallbackData("🏠 Menú Principal", "menu_principal")
-                });
-
-                var successMarkup = new InlineKeyboardMarkup(successButtons);
-
-                // Obtener nombre y apellido del usuario (ajustado según la estructura de la clase Usuario)
                 string nombreCompleto = usuario.nombre;
-                if (usuario.apellido_paterno != null)
+                if (!string.IsNullOrEmpty(usuario.apellido_paterno))
                 {
                     nombreCompleto += " " + usuario.apellido_paterno;
                 }
@@ -370,45 +340,22 @@ namespace BLL
                     chatId,
                     "✅ ¡Te has inscrito exitosamente al curso *" + curso.nombre_curso + "*!\n\n" +
                     "Nombre: " + nombreCompleto + "\n" +
-                    "Teléfono: " + usuario.telefono + "\n\n" +
-                    "Recibirás notificaciones sobre este curso.",
+                    "Teléfono: " + usuario.telefono + "\n" +
+                    "Correo: " + usuario.email,
                     parseMode: ParseMode.Markdown,
-                    replyMarkup: successMarkup,
                     cancellationToken: ct
                 );
             }
             catch (Exception ex)
             {
-                // Crear botones inline para volver a intentar o cancelar
-                var failButtons = new List<InlineKeyboardButton[]>();
-                failButtons.Add(new[] {
-                    InlineKeyboardButton.WithCallbackData("🔄 Intentar nuevamente", "inscribirse|" + cursoId)
-                });
-                failButtons.Add(new[] {
-                    InlineKeyboardButton.WithCallbackData("❌ Cancelar", "volvercursos")
-                });
-
-                var failMarkup = new InlineKeyboardMarkup(failButtons);
-
                 await _bot.SendTextMessageAsync(
                     chatId,
-                    "❌ Ha ocurrido un error al procesar tu inscripción. Por favor, intenta nuevamente más tarde.",
+                    "❌ Error al procesar la inscripción. Intenta nuevamente más tarde.",
                     parseMode: ParseMode.Markdown,
-                    replyMarkup: failMarkup,
                     cancellationToken: ct
                 );
-
-                // Registrar el error para depuración
                 Console.WriteLine("Error al inscribir usuario: " + ex.Message);
             }
-        }
-
-        // Método público para verificar si el usuario está en estado de espera
-        public bool IsAwaitingPhoneNumber(long chatId)
-        {
-            return _userStates.ContainsKey(chatId) &&
-                   _userStates[chatId].AwaitingPhoneNumber &&
-                   _userStates[chatId].StateType == UserStateType.Curso;
         }
     }
 }

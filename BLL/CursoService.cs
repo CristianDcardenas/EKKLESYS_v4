@@ -15,6 +15,7 @@ namespace BLL
         private readonly CursoRepository cursoRepository;
         private readonly InscripcionCursoRepository inscripcionCursoRepository;
         private readonly UsuarioRepository usuarioRepository;
+        private readonly EmailNotificationService emailNotificationService;
         private readonly string connectionString;
 
         public CursoService()
@@ -24,6 +25,7 @@ namespace BLL
             usuarioRepository = new UsuarioRepository(connectionManager);
             cursoRepository = new CursoRepository(connectionManager);
             inscripcionCursoRepository = new InscripcionCursoRepository(connectionManager, usuarioRepository);
+            emailNotificationService = new EmailNotificationService(); // Nuevo servicio
         }
 
         public string Guardar(Curso curso)
@@ -37,6 +39,22 @@ namespace BLL
                 }
 
                 cursoRepository.Guardar(curso);
+
+                // *** NUEVA FUNCIONALIDAD: Enviar notificación de nuevo curso ***
+                try
+                {
+                    //emailNotificationService.NotificarCreacionCurso(curso);
+                    //Console.WriteLine($"Notificaciones de nuevo curso enviadas para: {curso.nombre_curso}");
+                    var emailNotificationService = new EmailNotificationService();
+                    string resultado = emailNotificationService.NotificarCreacionCurso(curso);
+                    // Opcional: mostrar resultado
+                }
+                catch (Exception emailEx)
+                {
+                    Console.WriteLine($"Error al enviar notificaciones de nuevo curso: {emailEx.Message}");
+                    // No fallar la operación principal por un error de email
+                }
+
                 return $"Curso {curso.nombre_curso} guardado exitosamente";
             }
             catch (Exception ex)

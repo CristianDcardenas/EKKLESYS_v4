@@ -13,6 +13,7 @@ namespace BLL
         private readonly EventoRepository eventoRepository;
         private readonly AsistenciaEventoRepository asistenciaEventoRepository;
         private readonly UsuarioRepository usuarioRepository;
+        private readonly EmailNotificationService emailNotificationService;
         private readonly string connectionString;
 
         public EventoService()
@@ -22,6 +23,7 @@ namespace BLL
             usuarioRepository = new UsuarioRepository(connectionManager);
             eventoRepository = new EventoRepository(connectionManager);
             asistenciaEventoRepository = new AsistenciaEventoRepository(connectionManager, usuarioRepository);
+            emailNotificationService = new EmailNotificationService(); // Nuevo servicio
         }
 
         public string Guardar(Evento evento)
@@ -35,6 +37,19 @@ namespace BLL
                 }
 
                 eventoRepository.Guardar(evento);
+
+                // *** NUEVA FUNCIONALIDAD: Enviar notificación de nuevo evento ***
+                try
+                {
+                    emailNotificationService.NotificarCreacionEvento(evento);
+                    Console.WriteLine($"Notificaciones de nuevo evento enviadas para: {evento.nombre_evento}");
+                }
+                catch (Exception emailEx)
+                {
+                    Console.WriteLine($"Error al enviar notificaciones de nuevo evento: {emailEx.Message}");
+                    // No fallar la operación principal por un error de email
+                }
+
                 return $"Evento {evento.nombre_evento} guardado exitosamente";
             }
             catch (Exception ex)
@@ -286,5 +301,4 @@ namespace BLL
             return asistenciaEventoRepository.ConsultarEventosPorUsuario(idUsuario, eventoRepository);
         }
     }
-
 }

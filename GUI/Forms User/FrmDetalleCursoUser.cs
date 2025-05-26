@@ -50,13 +50,37 @@ namespace GUI
                 txtDescripcion.Text = _curso.descripcion_curso;
                 lblInscritos.Text = $"Inscritos: {_cursoDto?.NumeroInscritos ?? 0}/{_curso.capacidad_max_curso}";
 
+
+                pictureBox.Paint += (s, pe) =>
+                {
+                    if (pictureBox.Image == null) return;
+                    var img = pictureBox.Image;
+                    int imgW = img.Width;
+                    int imgH = img.Height;
+                    int boxW = pictureBox.Width;
+                    int boxH = pictureBox.Height;
+
+                    // Si la imagen es más grande que el PictureBox, escálala proporcionalmente
+                    float scale = Math.Min(1f, Math.Min((float)boxW / imgW, (float)boxH / imgH));
+                    int drawW = (int)(imgW * scale);
+                    int drawH = (int)(imgH * scale);
+
+                    int x = (boxW - drawW) / 2;
+                    int y = (boxH - drawH) / 2;
+
+                    pe.Graphics.Clear(pictureBox.BackColor);
+                    pe.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                    pe.Graphics.DrawImage(img, x, y, drawW, drawH);
+                };
+
                 // Cargar la imagen si existe
                 if (!string.IsNullOrEmpty(_curso.ruta_imagen_curso) && File.Exists(_curso.ruta_imagen_curso))
                 {
                     try
                     {
                         pictureBox.Image = Image.FromFile(_curso.ruta_imagen_curso);
-                        pictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
+                        pictureBox.SizeMode = PictureBoxSizeMode.CenterImage;
+                        //pictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
                     }
                     catch (Exception ex)
                     {
@@ -195,6 +219,11 @@ namespace GUI
         private void FrmDetalleCursoUser_Load(object sender, EventArgs e)
         {
             // Configuraciones adicionales al cargar el formulario
+        }
+
+        private void pictureBox_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

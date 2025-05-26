@@ -41,6 +41,28 @@ namespace GUI
                     return;
                 }
 
+                pictureBox.Paint += (s, pe) =>
+                {
+                    if (pictureBox.Image == null) return;
+                    var img = pictureBox.Image;
+                    int imgW = img.Width;
+                    int imgH = img.Height;
+                    int boxW = pictureBox.Width;
+                    int boxH = pictureBox.Height;
+
+                    // Si la imagen es más grande que el PictureBox, escálala proporcionalmente
+                    float scale = Math.Min(1f, Math.Min((float)boxW / imgW, (float)boxH / imgH));
+                    int drawW = (int)(imgW * scale);
+                    int drawH = (int)(imgH * scale);
+
+                    int x = (boxW - drawW) / 2;
+                    int y = (boxH - drawH) / 2;
+
+                    pe.Graphics.Clear(pictureBox.BackColor);
+                    pe.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                    pe.Graphics.DrawImage(img, x, y, drawW, drawH);
+                };
+
                 // Load image if available
                 if (!string.IsNullOrEmpty(_curso.ruta_imagen_curso) && File.Exists(_curso.ruta_imagen_curso))
                 {
@@ -50,7 +72,7 @@ namespace GUI
                         {
                             pictureBox.Image = new Bitmap(originalImage);
                         }
-                        pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+                        pictureBox.SizeMode = PictureBoxSizeMode.CenterImage;
                     }
                     catch (Exception ex)
                     {
@@ -164,6 +186,11 @@ namespace GUI
         private void FrmDetalleCursoAdmin_Load(object sender, EventArgs e)
         {
             // No additional logic needed
+        }
+
+        private void pictureBox_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -21,13 +21,13 @@
             this.lblTitulo = new System.Windows.Forms.Label();
             this.pictureBox = new System.Windows.Forms.PictureBox();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.lblLugar = new System.Windows.Forms.Label();
             this.btnEliminarEvento = new FontAwesome.Sharp.IconButton();
             this.btnVerAsistentes = new System.Windows.Forms.Button();
             this.lblAsistentes = new System.Windows.Forms.Label();
             this.txtDescripcion = new System.Windows.Forms.TextBox();
             this.lblDescripcion = new System.Windows.Forms.Label();
             this.lblFechas = new System.Windows.Forms.Label();
-            this.lblLugar = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.panel2.SuspendLayout();
@@ -50,7 +50,7 @@
             this.lblTitulo.ForeColor = System.Drawing.Color.White;
             this.lblTitulo.Location = new System.Drawing.Point(15, 15);
             this.lblTitulo.Name = "lblTitulo";
-            this.lblTitulo.Size = new System.Drawing.Size(208, 30);
+            this.lblTitulo.Size = new System.Drawing.Size(235, 37);
             this.lblTitulo.TabIndex = 0;
             this.lblTitulo.Text = "Título del Evento";
             // 
@@ -64,6 +64,7 @@
             this.pictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox.TabIndex = 1;
             this.pictureBox.TabStop = false;
+            this.pictureBox.Click += new System.EventHandler(this.pictureBox_Click);
             // 
             // panel2
             // 
@@ -81,6 +82,17 @@
             this.panel2.Padding = new System.Windows.Forms.Padding(20);
             this.panel2.Size = new System.Drawing.Size(781, 301);
             this.panel2.TabIndex = 2;
+            // 
+            // lblLugar
+            // 
+            this.lblLugar.AutoSize = true;
+            this.lblLugar.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.lblLugar.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(50)))), ((int)(((byte)(50)))));
+            this.lblLugar.Location = new System.Drawing.Point(20, 50);
+            this.lblLugar.Name = "lblLugar";
+            this.lblLugar.Size = new System.Drawing.Size(62, 23);
+            this.lblLugar.TabIndex = 9;
+            this.lblLugar.Text = "Lugar:";
             // 
             // btnEliminarEvento
             // 
@@ -125,7 +137,7 @@
             this.lblAsistentes.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(100)))), ((int)(((byte)(100)))));
             this.lblAsistentes.Location = new System.Drawing.Point(20, 211);
             this.lblAsistentes.Name = "lblAsistentes";
-            this.lblAsistentes.Size = new System.Drawing.Size(76, 23);
+            this.lblAsistentes.Size = new System.Drawing.Size(104, 23);
             this.lblAsistentes.TabIndex = 5;
             this.lblAsistentes.Text = "Asistentes: 0";
             // 
@@ -148,7 +160,7 @@
             this.lblDescripcion.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(50)))), ((int)(((byte)(50)))));
             this.lblDescripcion.Location = new System.Drawing.Point(20, 84);
             this.lblDescripcion.Name = "lblDescripcion";
-            this.lblDescripcion.Size = new System.Drawing.Size(148, 23);
+            this.lblDescripcion.Size = new System.Drawing.Size(197, 23);
             this.lblDescripcion.TabIndex = 3;
             this.lblDescripcion.Text = "Descripción del evento:";
             // 
@@ -159,24 +171,13 @@
             this.lblFechas.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(50)))), ((int)(((byte)(50)))));
             this.lblFechas.Location = new System.Drawing.Point(20, 20);
             this.lblFechas.Name = "lblFechas";
-            this.lblFechas.Size = new System.Drawing.Size(55, 23);
+            this.lblFechas.Size = new System.Drawing.Size(67, 23);
             this.lblFechas.TabIndex = 0;
             this.lblFechas.Text = "Fechas:";
             // 
-            // lblLugar
-            // 
-            this.lblLugar.AutoSize = true;
-            this.lblLugar.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.lblLugar.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(50)))), ((int)(((byte)(50)))));
-            this.lblLugar.Location = new System.Drawing.Point(20, 50);
-            this.lblLugar.Name = "lblLugar";
-            this.lblLugar.Size = new System.Drawing.Size(45, 23);
-            this.lblLugar.TabIndex = 9;
-            this.lblLugar.Text = "Lugar:";
-            // 
             // FrmDetalleEventoAdmin
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 19F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(245)))), ((int)(((byte)(246)))), ((int)(((byte)(250)))));
             this.ClientSize = new System.Drawing.Size(781, 628);
@@ -196,6 +197,7 @@
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
             this.ResumeLayout(false);
+
         }
 
         #endregion

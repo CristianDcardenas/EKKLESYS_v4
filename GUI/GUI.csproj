@@ -209,6 +209,9 @@
     <EmbeddedResource Include="Forms Admin\FrmDetalleCursoAdmin.resx">
       <DependentUpon>FrmDetalleCursoAdmin.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms Admin\FrmDetalleEventoAdmin.resx">
+      <DependentUpon>FrmDetalleEventoAdmin.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms Admin\FrmEventosAdmin.resx">
       <DependentUpon>FrmEventosAdmin.cs</DependentUpon>
     </EmbeddedResource>

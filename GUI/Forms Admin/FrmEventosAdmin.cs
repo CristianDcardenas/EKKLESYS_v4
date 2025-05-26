@@ -75,8 +75,30 @@ namespace GUI
                     Width = 320,
                     Height = 180,
                     Dock = DockStyle.Fill,
-                    SizeMode = PictureBoxSizeMode.Zoom,
+                    SizeMode = PictureBoxSizeMode.CenterImage,
                     BackColor = Color.Transparent
+                };
+
+                pictureBox.Paint += (s, pe) =>
+                {
+                    if (pictureBox.Image == null) return;
+                    var img = pictureBox.Image;
+                    int imgW = img.Width;
+                    int imgH = img.Height;
+                    int boxW = pictureBox.Width;
+                    int boxH = pictureBox.Height;
+
+                    // Si la imagen es más grande que el PictureBox, escálala proporcionalmente
+                    float scale = Math.Min(1f, Math.Min((float)boxW / imgW, (float)boxH / imgH));
+                    int drawW = (int)(imgW * scale);
+                    int drawH = (int)(imgH * scale);
+
+                    int x = (boxW - drawW) / 2;
+                    int y = (boxH - drawH) / 2;
+
+                    pe.Graphics.Clear(pictureBox.BackColor);
+                    pe.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                    pe.Graphics.DrawImage(img, x, y, drawW, drawH);
                 };
 
                 if (!string.IsNullOrEmpty(evento.ruta_imagen_evento) && File.Exists(evento.ruta_imagen_evento))
@@ -230,6 +252,9 @@ namespace GUI
 
                 progressContainer.Controls.Add(progressBar);
 
+                bool esAdmin = Session.CurrentUser?.es_administrador == "S";
+                bool eventoVigente = evento.fecha_fin_evento >= DateTime.Now;
+
                 Button btnVerDetalles = new Button
                 {
                     Text = "Ver detalles",
@@ -247,7 +272,7 @@ namespace GUI
                 ApplyRoundedCorners(btnVerDetalles, 5);
 
                 int eventoId = evento.id_evento;
-                btnVerDetalles.Enabled = !(evento.fecha_fin_evento < DateTime.Now);
+                btnVerDetalles.Enabled = esAdmin ? true : eventoVigente;
                 btnVerDetalles.Click += (sender, e) => MostrarDetallesEvento(eventoId);
 
                 contentPanel.Controls.Add(lblNombre);

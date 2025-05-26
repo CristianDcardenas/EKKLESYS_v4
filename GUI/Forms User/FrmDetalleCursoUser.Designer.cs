@@ -48,7 +48,7 @@
             this.lblTitulo.ForeColor = System.Drawing.Color.White;
             this.lblTitulo.Location = new System.Drawing.Point(15, 15);
             this.lblTitulo.Name = "lblTitulo";
-            this.lblTitulo.Size = new System.Drawing.Size(208, 30);
+            this.lblTitulo.Size = new System.Drawing.Size(220, 37);
             this.lblTitulo.TabIndex = 0;
             this.lblTitulo.Text = "Título del Curso";
             // 
@@ -62,6 +62,7 @@
             this.pictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox.TabIndex = 1;
             this.pictureBox.TabStop = false;
+            this.pictureBox.Click += new System.EventHandler(this.pictureBox_Click);
             // 
             // panel2
             // 
@@ -106,7 +107,7 @@
             this.lblInscritos.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(100)))), ((int)(((byte)(100)))));
             this.lblInscritos.Location = new System.Drawing.Point(20, 211);
             this.lblInscritos.Name = "lblInscritos";
-            this.lblInscritos.Size = new System.Drawing.Size(69, 23);
+            this.lblInscritos.Size = new System.Drawing.Size(91, 23);
             this.lblInscritos.TabIndex = 5;
             this.lblInscritos.Text = "Inscritos: 0";
             // 
@@ -129,7 +130,7 @@
             this.lblInstructor.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(50)))), ((int)(((byte)(50)))));
             this.lblInstructor.Location = new System.Drawing.Point(20, 84);
             this.lblInstructor.Name = "lblInstructor";
-            this.lblInstructor.Size = new System.Drawing.Size(140, 23);
+            this.lblInstructor.Size = new System.Drawing.Size(185, 23);
             this.lblInstructor.TabIndex = 3;
             this.lblInstructor.Text = "Descripción del curso:";
             // 
@@ -140,13 +141,13 @@
             this.lblFechas.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(50)))), ((int)(((byte)(50)))));
             this.lblFechas.Location = new System.Drawing.Point(20, 20);
             this.lblFechas.Name = "lblFechas";
-            this.lblFechas.Size = new System.Drawing.Size(55, 23);
+            this.lblFechas.Size = new System.Drawing.Size(67, 23);
             this.lblFechas.TabIndex = 0;
             this.lblFechas.Text = "Fechas:";
             // 
             // FrmDetalleCursoUser
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 19F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(245)))), ((int)(((byte)(246)))), ((int)(((byte)(250)))));
             this.ClientSize = new System.Drawing.Size(781, 628);
@@ -166,6 +167,7 @@
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
             this.ResumeLayout(false);
+
         }
 
         #endregion

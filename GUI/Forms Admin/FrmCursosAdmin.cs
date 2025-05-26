@@ -75,8 +75,30 @@ namespace GUI
                     Width = 320,
                     Height = 180,
                     Dock = DockStyle.Fill,
-                    SizeMode = PictureBoxSizeMode.Zoom,
+                    SizeMode = PictureBoxSizeMode.CenterImage,
                     BackColor = Color.Transparent
+                };
+
+                pictureBox.Paint += (s, pe) =>
+                {
+                    if (pictureBox.Image == null) return;
+                    var img = pictureBox.Image;
+                    int imgW = img.Width;
+                    int imgH = img.Height;
+                    int boxW = pictureBox.Width;
+                    int boxH = pictureBox.Height;
+
+                    // Si la imagen es más grande que el PictureBox, escálala proporcionalmente
+                    float scale = Math.Min(1f, Math.Min((float)boxW / imgW, (float)boxH / imgH));
+                    int drawW = (int)(imgW * scale);
+                    int drawH = (int)(imgH * scale);
+
+                    int x = (boxW - drawW) / 2;
+                    int y = (boxH - drawH) / 2;
+
+                    pe.Graphics.Clear(pictureBox.BackColor);
+                    pe.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                    pe.Graphics.DrawImage(img, x, y, drawW, drawH);
                 };
 
                 if (!string.IsNullOrEmpty(curso.ruta_imagen_curso) && File.Exists(curso.ruta_imagen_curso))
@@ -201,6 +223,10 @@ namespace GUI
 
                 progressContainer.Controls.Add(progressBar);
 
+                bool esAdmin = Session.CurrentUser?.es_administrador == "S";
+                bool cursoVigente = curso.fecha_fin_curso >= DateTime.Now;
+
+
                 Button btnVerDetalles = new Button
                 {
                     Text = "Ver detalles",
@@ -218,7 +244,7 @@ namespace GUI
                 ApplyRoundedCorners(btnVerDetalles, 5);
 
                 int cursoId = curso.id_curso;
-                btnVerDetalles.Enabled = !(curso.fecha_fin_curso < DateTime.Now);
+                btnVerDetalles.Enabled = esAdmin ? true : cursoVigente;
                 btnVerDetalles.Click += (sender, e) => MostrarDetallesCurso(cursoId);
 
                 contentPanel.Controls.Add(lblNombre);
